@@ -1,9 +1,10 @@
 #include "snake.h"
 #include "config.h"
-#include "global.h"
 #include "resource.h"
 
 using namespace std;
+
+Game game;
 
 SDL_RWops* get_resource(HINSTANCE hinst, LPCWSTR name, LPCWSTR type)
 {
@@ -15,9 +16,9 @@ SDL_RWops* get_resource(HINSTANCE hinst, LPCWSTR name, LPCWSTR type)
 
 SDL_Surface* load_surface(DWORD ID)
 {
-	SDL_RWops* src = get_resource(hinstance, MAKEINTRESOURCE(ID), TEXT("PNG"));
+	SDL_RWops* src = get_resource(game.hinstance, MAKEINTRESOURCE(ID), TEXT("PNG"));
 	SDL_Surface* temp = IMG_LoadPNG_RW(src);
-	SDL_Surface* image = SDL_ConvertSurface(temp, format, NULL);
+	SDL_Surface* image = SDL_ConvertSurface(temp, game.format, NULL);
 	SDL_FreeRW(src);
 	SDL_FreeSurface(temp);
 	return image;
@@ -30,68 +31,45 @@ Uint32 create_main_interval(Uint32 interval, void* param)
 	return interval;
 }
 
-void add_food(int add_food_count = 1)
-{
-	for (int i = 0; i < add_food_count; i++)
-	{
-		int x = randx(random);
-		int y = randy(random);
-		Body key = { x,y };
-
-		if (!(count(snake.body.begin(), snake.body.end(), key) || count(food.begin(), food.end(), key) || snake.head == key)) { food.push_back(key); }
-		else { i--; }
-	}
-}
-
 void display_block(SDL_Surface* img, int x, int y)
 {
-	block_rect = { border + block_width * x,border + block_width * y,block_width,block_width };
-	SDL_BlitSurface(img, NULL, surface, &block_rect);
+	game.block_rect = { border + block_width * x,border + block_width * y,block_width,block_width };
+	SDL_BlitSurface(img, NULL, game.surface, &game.block_rect);
 }
 
 void display_text(const char* text, TTF_Font* type, int x, int y)
 {
 	SDL_Surface* text_surface = TTF_RenderText_Blended(type, text, { 0,0,0 });
 	SDL_Rect text_rect = { x,y,text_rect_width,text_rect_height };
-	SDL_BlitSurface(text_surface, NULL, surface, &text_rect);
+	SDL_BlitSurface(text_surface, NULL, game.surface, &text_rect);
 	SDL_FreeSurface(text_surface);
 }
 
 void display_info()
 {
 	char info[30];
-	sprintf_s(info, "Length: %d", snake.body.size() + 1);
-	display_text(info, font, screen_width - 280, screen_height - (font_size + text_border));
+	sprintf_s(info, "Length: %d", game.snake.body.size() + 1);
+	display_text(info, game.font, screen_width - 280, screen_height - (font_size + text_border));
 	sprintf_s(info, "Score: %d", game.score);
-	display_text(info, font, screen_width - 130, screen_height - (font_size + text_border));
+	display_text(info, game.font, screen_width - 130, screen_height - (font_size + text_border));
 
 	switch (game.status)
 	{
-		case start: display_text("Click anywhere to start...", font, border, screen_height - (font_size + text_border)); break;
-		case pause: display_text("Click anywhere to resume...", font, border, screen_height - (font_size + text_border)); break;
-		case gameover: display_text("Gameover!", font, border, screen_height - (font_size + text_border)); break;
+		case start: display_text("Click anywhere to start...", game.font, border, screen_height - (font_size + text_border)); break;
+		case pause: display_text("Click anywhere to resume...", game.font, border, screen_height - (font_size + text_border)); break;
+		case gameover: display_text("Gameover!", game.font, border, screen_height - (font_size + text_border)); break;
 	}
 }
 
 void display_food()
 {
-	for (int i = 0; i < food.size(); i++)
+	for (int i = 0; i < game.food.size(); i++)
 	{
-		display_block(food_red, food[i].x, food[i].y);
+		display_block(game.food_red, game.food[i].x, game.food[i].y);
 	}
 }
 
-void exit_game()
-{
-	SDL_DestroyWindow(window);
-	SDL_RemoveTimer(main_interval);
-	TTF_CloseFont(font);
-	SDL_FreeSurface(background);
-	SDL_FreeSurface(snake_body);
-	SDL_FreeSurface(food_red);
-	SDL_Quit();
-	exit(0);
-}
+Game::Game() : random((unsigned)(time(NULL))), rand_X(0, table_x_max - 1), rand_Y(0, table_y_max - 1) {}
 
 void Game::init_game()
 {
@@ -127,6 +105,31 @@ void Game::init_font()
 void Game::start_main_interval()
 {
 	main_interval = SDL_AddTimer(game_interval, create_main_interval, NULL);
+}
+
+void Game::add_food(int add_food_count = 1)
+{
+	for (int i = 0; i < add_food_count; i++)
+	{
+		int x = rand_X(random);
+		int y = rand_Y(random);
+		Body key = { x,y };
+
+		if (count(snake.body.begin(), snake.body.end(), key) || count(food.begin(), food.end(), key) || snake.head == key) { i--; }
+		else { food.push_back(key); }
+	}
+}
+
+void Game::exit_game()
+{
+	SDL_DestroyWindow(window);
+	SDL_RemoveTimer(main_interval);
+	TTF_CloseFont(font);
+	SDL_FreeSurface(background);
+	SDL_FreeSurface(snake_body);
+	SDL_FreeSurface(food_red);
+	SDL_Quit();
+	exit(0);
 }
 
 void Game::update()
@@ -250,13 +253,13 @@ void Snake::eat()
 {
 	if (alive == true)
 	{
-		for (int i = 0; i < food.size(); i++)
+		for (int i = 0; i < game.food.size(); i++)
 		{
-			if (food[i].x == head.x && food[i].y == head.y)
+			if (game.food[i].x == head.x && game.food[i].y == head.y)
 			{
-				food.erase(food.begin() + i);
+				game.food.erase(game.food.begin() + i);
 				body.push_back(temp);
-				add_food();
+				game.add_food();
 				game.score += eat_score;
 			}
 		}
@@ -267,7 +270,7 @@ void Snake::display()
 {
 	for (int i = 0; i < body.size(); i++)
 	{
-		display_block(snake_body, body[i].x, body[i].y);
+		display_block(game.snake_body, body[i].x, body[i].y);
 	}
-	display_block(snake_body, head.x, head.y);
+	display_block(game.snake_body, head.x, head.y);
 }

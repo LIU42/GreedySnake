@@ -162,7 +162,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h" />
-    <ClInclude Include="global.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="snake.h" />
   </ItemGroup>
