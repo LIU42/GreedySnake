@@ -17,11 +17,11 @@ SDL_RWops* get_resource(HINSTANCE hinst, LPCWSTR name, LPCWSTR type)
 SDL_Surface* load_surface(DWORD ID)
 {
 	SDL_RWops* src = get_resource(game.hinstance, MAKEINTRESOURCE(ID), TEXT("PNG"));
-	SDL_Surface* temp = IMG_LoadPNG_RW(src);
-	SDL_Surface* image = SDL_ConvertSurface(temp, game.format, NULL);
+	SDL_Surface* origin_image = IMG_LoadPNG_RW(src);
+	SDL_Surface* convert_image = SDL_ConvertSurface(origin_image, game.format, NULL);
 	SDL_FreeRW(src);
-	SDL_FreeSurface(temp);
-	return image;
+	SDL_FreeSurface(origin_image);
+	return convert_image;
 }
 
 Uint32 create_main_interval(Uint32 interval, void* param)
