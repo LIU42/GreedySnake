@@ -1,6 +1,4 @@
 #include "snake.h"
-#include "config.h"
-#include "resource.h"
 
 using namespace std;
 
@@ -81,8 +79,8 @@ void Game::init_game()
 
 void Game::init_window()
 {
-	hinstance = GetModuleHandle(0);
 	SDL_Init(SDL_INIT_EVERYTHING);
+	hinstance = GetModuleHandle(0);
 	window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
 	surface = SDL_GetWindowSurface(window);
 	format = SDL_AllocFormat(IMG_format);
@@ -125,9 +123,11 @@ void Game::exit_game()
 	SDL_DestroyWindow(window);
 	SDL_RemoveTimer(main_interval);
 	TTF_CloseFont(font);
+
 	SDL_FreeSurface(background);
 	SDL_FreeSurface(snake_body);
 	SDL_FreeSurface(food_red);
+
 	SDL_Quit();
 	exit(0);
 }
