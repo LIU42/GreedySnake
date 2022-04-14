@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 	while (true)
 	{
 		game.events();
-		SDL_Delay(user_input_delay);
+		SDL_Delay(USER_INPUT_DELAY);
 	}
 	return 0;
 }

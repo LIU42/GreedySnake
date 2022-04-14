@@ -31,14 +31,14 @@ Uint32 create_main_interval(Uint32 interval, void* param)
 
 void display_block(SDL_Surface* img, int x, int y)
 {
-	game.block_rect = { border + block_width * x,border + block_width * y,block_width,block_width };
+	game.block_rect = { BORDER + BLOCK_WIDTH * x,BORDER + BLOCK_WIDTH * y,BLOCK_WIDTH,BLOCK_WIDTH };
 	SDL_BlitSurface(img, NULL, game.surface, &game.block_rect);
 }
 
 void display_text(const char* text, TTF_Font* type, int x, int y)
 {
 	SDL_Surface* text_surface = TTF_RenderText_Blended(type, text, { 0,0,0 });
-	SDL_Rect text_rect = { x,y,text_rect_width,text_rect_height };
+	SDL_Rect text_rect = { x,y,TEXT_RECT_WIDTH,TEXT_RECT_HEIGHT };
 	SDL_BlitSurface(text_surface, NULL, game.surface, &text_rect);
 	SDL_FreeSurface(text_surface);
 }
@@ -47,15 +47,15 @@ void display_info()
 {
 	char info[30];
 	sprintf_s(info, "Length: %d", game.snake.body.size() + 1);
-	display_text(info, game.font, screen_width - 280, screen_height - (font_size + text_border));
+	display_text(info, game.font, SCREEN_WIDTH - 280, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 	sprintf_s(info, "Score: %d", game.score);
-	display_text(info, game.font, screen_width - 130, screen_height - (font_size + text_border));
+	display_text(info, game.font, SCREEN_WIDTH - 130, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 
 	switch (game.status)
 	{
-		case start: display_text("Click anywhere to start...", game.font, border, screen_height - (font_size + text_border)); break;
-		case pause: display_text("Click anywhere to resume...", game.font, border, screen_height - (font_size + text_border)); break;
-		case gameover: display_text("Gameover!", game.font, border, screen_height - (font_size + text_border)); break;
+		case START: display_text("Click anywhere to START...", game.font, BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
+		case PAUSE: display_text("Click anywhere to resume...", game.font, BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
+		case GAMEOVER: display_text("GAMEOVER!", game.font, BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
 	}
 }
 
@@ -67,24 +67,24 @@ void display_food()
 	}
 }
 
-Game::Game() : random((unsigned)(time(NULL))), rand_X(0, table_x_max - 1), rand_Y(0, table_y_max - 1) {}
+Game::Game() : random((unsigned)(time(NULL))), rand_X(0, TABLE_X_MAX - 1), rand_Y(0, TABLE_Y_MAX - 1) {}
 
 void Game::init_game()
 {
 	score = 0;
-	status = start;
+	status = START;
 	keystatus = SDL_GetKeyboardState(NULL);
-	add_food(food_max_count);
+	add_food(FOOD_MAX_COUNT);
 }
 
 void Game::init_window()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	hinstance = GetModuleHandle(0);
-	window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	surface = SDL_GetWindowSurface(window);
-	format = SDL_AllocFormat(IMG_format);
-	screen_rect = { 0,0,screen_width,screen_height };
+	format = SDL_AllocFormat(IMG_FORMAT);
+	screen_rect = { 0,0,SCREEN_WIDTH,SCREEN_HEIGHT };
 }
 
 void Game::load_image()
@@ -97,12 +97,12 @@ void Game::load_image()
 void Game::init_font()
 {
 	TTF_Init();
-	font = TTF_OpenFontRW(get_resource(hinstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, font_size);
+	font = TTF_OpenFontRW(get_resource(hinstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
 void Game::start_main_interval()
 {
-	main_interval = SDL_AddTimer(game_interval, create_main_interval, NULL);
+	main_interval = SDL_AddTimer(GAME_INTERVAL, create_main_interval, NULL);
 }
 
 void Game::add_food(int add_food_count = 1)
@@ -134,7 +134,7 @@ void Game::exit_game()
 
 void Game::update()
 {
-	if (status == playing)
+	if (status == PLAYING)
 	{
 		snake.crash();
 		snake.move();
@@ -144,7 +144,7 @@ void Game::update()
 
 void Game::events()
 {
-	if (status == playing)
+	if (status == PLAYING)
 	{
 		if (keystatus[SDL_SCANCODE_W]) { snake.head.next = UP; }
 		if (keystatus[SDL_SCANCODE_S]) { snake.head.next = DOWN; }
@@ -154,16 +154,16 @@ void Game::events()
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT) { exit_game(); }
-		if (event.key.keysym.sym == SDLK_p && status == playing) { status = pause; }
+		if (event.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
 		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (status == gameover)
+			if (status == GAMEOVER)
 			{
 				food.clear();
 				init_game();
 				snake.init();
 			}
-			status = playing;
+			status = PLAYING;
 		}
 	}
 }
@@ -180,8 +180,8 @@ void Game::display()
 Snake::Snake() { init(); }
 void Snake::init()
 {
-	head.x = table_x_max / 2;
-	head.y = table_y_max / 2;
+	head.x = TABLE_X_MAX / 2;
+	head.y = TABLE_Y_MAX / 2;
 	head.next = RIGHT;
 	head.next_last = RIGHT;
 	temp.x = 0;
@@ -189,7 +189,7 @@ void Snake::init()
 	alive = true;
 	body.clear();
 
-	for (int i = 1; i < snake_init_length; i++)
+	for (int i = 1; i < SNAKE_INIT_LENGTH; i++)
 	{
 		body.push_back({ head.x - i,head.y });
 	}
@@ -236,7 +236,7 @@ void Snake::crash()
 		case RIGHT: front.x += 1; break;
 	}
 
-	if (front.x < 0 || front.x >= table_x_max || front.y < 0 || front.y >= table_y_max) { crash = true; }
+	if (front.x < 0 || front.x >= TABLE_X_MAX || front.y < 0 || front.y >= TABLE_Y_MAX) { crash = true; }
 
 	for (int i = 0; i < body.size(); i++)
 	{
@@ -244,7 +244,7 @@ void Snake::crash()
 	}
 	if (crash == true)
 	{
-		game.status = gameover;
+		game.status = GAMEOVER;
 		alive = false;
 	}
 }
@@ -260,7 +260,7 @@ void Snake::eat()
 				game.food.erase(game.food.begin() + i);
 				body.push_back(temp);
 				game.add_food();
-				game.score += eat_score;
+				game.score += EAT_SCORE;
 			}
 		}
 	}
