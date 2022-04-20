@@ -32,6 +32,63 @@ struct Head
 typedef Position Body;
 typedef Position Food;
 
+class Window
+{
+	public:
+		HINSTANCE hinstance;
+		SDL_Window* window;
+		SDL_Event event;
+		TTF_Font* font;
+		SDL_Rect screen_rect;
+		SDL_Rect block_rect;
+		SDL_PixelFormat* format;
+		const Uint8* keystatus;
+
+	public:
+		SDL_Surface* surface;
+		SDL_Surface* background;
+		SDL_Surface* snake_body;
+		SDL_Surface* food_red;
+
+	public:
+		SDL_RWops* get_resource(HINSTANCE, LPCWSTR, LPCWSTR);
+		SDL_Surface* load_surface(DWORD);
+
+	public:
+		void text(const char*, int, int);
+		void block(SDL_Surface*, int, int);
+		void init();
+		void load_image();
+		void load_font();
+		void free_image();
+		void close_font();
+		void close();
+};
+
+class Game
+{
+	public:
+		SDL_TimerID main_interval;
+		int score;
+		int status;
+
+	public:
+		default_random_engine random;
+		uniform_int_distribution <int> rand_X;
+		uniform_int_distribution <int> rand_Y;
+
+	public:
+		Game();
+		void init();
+		void add_food(int);
+		void start_main_interval();
+		void update();
+		void event();
+		void display_info();
+		void display_food();
+		void display();
+};
+
 class Snake
 {
 	public:
@@ -49,53 +106,8 @@ class Snake
 		void display();
 };
 
-class Game
-{
-	public:
-		int score;
-		int status;
-		const Uint8* keystatus;
-	
-	public:
-		HINSTANCE hinstance;
-		SDL_Window* window;
-		SDL_Event event;
-		TTF_Font* font;
-		SDL_Rect screen_rect;
-		SDL_Rect block_rect;
-
-	public:
-		SDL_Surface* surface;
-		SDL_Surface* background;
-		SDL_Surface* snake_body;
-		SDL_Surface* food_red;
-
-	public:
-		SDL_TimerID main_interval;
-		SDL_PixelFormat* format;
-
-	public:
-		default_random_engine random;
-		uniform_int_distribution <int> rand_X;
-		uniform_int_distribution <int> rand_Y;
-
-	public:
-		Snake snake;
-		vector <Food> food;
-
-	public:
-		Game();
-		void init_game();
-		void init_window();
-		void init_font();
-		void load_image();
-		void exit_game();
-		void add_food(int);
-		void start_main_interval();
-		void update();
-		void events();
-		void display();
-};
-
+extern Window window;
 extern Game game;
+extern Snake snake;
+extern vector <Food> food;
 #endif
