@@ -82,6 +82,7 @@ void Game::init()
 {
 	score = 0;
 	status = START;
+	snake.init();
 	add_food(FOOD_MAX_COUNT);
 }
 
@@ -134,9 +135,9 @@ void Game::event()
 		{
 			if (status == GAMEOVER)
 			{
-				init();
 				food.clear();
 				snake.init();
+				init();
 			}
 			status = PLAYING;
 		}
@@ -147,9 +148,9 @@ void Game::display_info()
 {
 	char info[30];
 	sprintf_s(info, "Length: %d", snake.body.size() + 1);
-	window.text(info, SCREEN_WIDTH - 280, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	window.text(info, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 	sprintf_s(info, "Score: %d", score);
-	window.text(info, SCREEN_WIDTH - 130, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	window.text(info, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 
 	switch (status)
 	{
@@ -176,7 +177,6 @@ void Game::display()
 	SDL_UpdateWindowSurface(window.window);
 }
 
-Snake::Snake() { init(); }
 void Snake::init()
 {
 	head.x = TABLE_X_MAX / 2;

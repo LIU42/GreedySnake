@@ -98,7 +98,6 @@ class Snake
 		bool alive;
 
 	public:
-		Snake();
 		void init();
 		void move();
 		void crash();
