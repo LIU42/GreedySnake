@@ -60,8 +60,8 @@ class Window
 		void init();
 		void load_image();
 		void load_font();
-		void free_image();
-		void close_font();
+		void delete_image();
+		void delete_font();
 		void close();
 };
 
@@ -82,6 +82,7 @@ class Game
 		void init();
 		void add_food(int);
 		void start_main_interval();
+		void delete_timer();
 		void update();
 		void event();
 		void display_info();

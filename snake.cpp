@@ -58,20 +58,21 @@ void Window::load_font()
 	font = TTF_OpenFontRW(get_resource(hinstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
-void Window::free_image()
+void Window::delete_image()
 {
 	SDL_FreeSurface(background);
 	SDL_FreeSurface(snake_body);
 	SDL_FreeSurface(food_red);
 }
 
-void Window::close_font() { TTF_CloseFont(font); }
+void Window::delete_font() { TTF_CloseFont(font); }
 
 void Window::close()
 {
 	SDL_DestroyWindow(window);
-	free_image();
-	close_font();
+	game.delete_timer();
+	delete_image();
+	delete_font();
 	SDL_Quit();
 	exit(0);
 }
@@ -107,6 +108,7 @@ Uint32 function_main_interval(Uint32 interval, void* param)
 }
 
 void Game::start_main_interval() { main_interval = SDL_AddTimer(GAME_INTERVAL, function_main_interval, NULL); }
+void Game::delete_timer() { SDL_RemoveTimer(main_interval); }
 
 void Game::update()
 {
@@ -130,7 +132,7 @@ void Game::event()
 	while (SDL_PollEvent(&window.event))
 	{
 		if (window.event.type == SDL_QUIT) { window.close(); }
-		if (window.event.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
+		if (window.event.type == SDL_KEYDOWN && window.event.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
 		if (window.event.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == GAMEOVER)
@@ -146,10 +148,10 @@ void Game::event()
 
 void Game::display_info()
 {
-	char info[30];
-	sprintf_s(info, "Length: %d", snake.body.size() + 1);
+	char info[INFO_MAX_LEN];
+	SDL_snprintf(info, INFO_MAX_LEN, "Length: %d", snake.body.size() + 1);
 	window.text(info, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
-	sprintf_s(info, "Score: %d", score);
+	SDL_snprintf(info, INFO_MAX_LEN, "Score: %d", score);
 	window.text(info, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 
 	switch (status)

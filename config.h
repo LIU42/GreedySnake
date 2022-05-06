@@ -19,6 +19,7 @@
 #define TEXT_RECT_WIDTH 200
 #define TEXT_RECT_HEIGHT 20
 #define TEXT_BORDER 4
+#define INFO_MAX_LEN 30
 
 #define START 0
 #define PLAYING 1
