@@ -19,12 +19,13 @@
 #define TEXT_RECT_WIDTH 200
 #define TEXT_RECT_HEIGHT 20
 #define TEXT_BORDER 4
-#define INFO_MAX_LEN 30
+#define TEXT_MAX_LEN 30
 
 #define START 0
 #define PLAYING 1
 #define PAUSE 2
 #define GAMEOVER 3
+#define EXIT 4
 
 #define SNAKE_INIT_LENGTH 10
 #define FOOD_MAX_COUNT 1

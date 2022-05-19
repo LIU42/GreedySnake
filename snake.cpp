@@ -23,14 +23,14 @@ SDL_Surface* Window::load_surface(DWORD ID)
 void Window::text(const char* text, int x, int y)
 {
 	SDL_Surface* text_surface = TTF_RenderText_Blended(font, text, { 0,0,0 });
-	SDL_Rect text_rect = { x,y,TEXT_RECT_WIDTH,TEXT_RECT_HEIGHT };
+	SDL_Rect text_rect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
 	SDL_BlitSurface(text_surface, NULL, surface, &text_rect);
 	SDL_FreeSurface(text_surface);
 }
 
 void Window::block(SDL_Surface* img, int x, int y)
 {
-	block_rect = { BORDER + BLOCK_WIDTH * x,BORDER + BLOCK_WIDTH * y,BLOCK_WIDTH,BLOCK_WIDTH };
+	block_rect = { BORDER + BLOCK_WIDTH * x, BORDER + BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH };
 	SDL_BlitSurface(img, NULL, surface, &block_rect);
 }
 
@@ -58,23 +58,25 @@ void Window::load_font()
 	font = TTF_OpenFontRW(get_resource(hinstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
-void Window::delete_image()
+void Window::free_image()
 {
 	SDL_FreeSurface(background);
 	SDL_FreeSurface(snake_body);
 	SDL_FreeSurface(food_red);
 }
 
-void Window::delete_font() { TTF_CloseFont(font); }
+void Window::free_font() { TTF_CloseFont(font); }
 
 void Window::close()
 {
 	SDL_DestroyWindow(window);
-	game.delete_timer();
-	delete_image();
-	delete_font();
+	SDL_FreeFormat(format);
+	game.end_main_interval();
+	free_image();
+	free_font();
+	TTF_Quit();
+	IMG_Quit();
 	SDL_Quit();
-	exit(0);
 }
 
 Game::Game() : random((unsigned)(time(NULL))), rand_X(0, TABLE_X_MAX - 1), rand_Y(0, TABLE_Y_MAX - 1) {}
@@ -93,7 +95,7 @@ void Game::add_food(int add_food_count = 1)
 	{
 		int x = rand_X(random);
 		int y = rand_Y(random);
-		Body key = { x,y };
+		Body key = { x, y };
 
 		if (count(snake.body.begin(), snake.body.end(), key) || count(food.begin(), food.end(), key) || snake.head == key) { i--; }
 		else { food.push_back(key); }
@@ -108,7 +110,7 @@ Uint32 function_main_interval(Uint32 interval, void* param)
 }
 
 void Game::start_main_interval() { main_interval = SDL_AddTimer(GAME_INTERVAL, function_main_interval, NULL); }
-void Game::delete_timer() { SDL_RemoveTimer(main_interval); }
+void Game::end_main_interval() { SDL_RemoveTimer(main_interval); }
 
 void Game::update()
 {
@@ -120,7 +122,7 @@ void Game::update()
 	}
 }
 
-void Game::event()
+void Game::events()
 {
 	if (status == PLAYING)
 	{
@@ -129,11 +131,11 @@ void Game::event()
 		if (window.keystatus[SDL_SCANCODE_A]) { snake.head.next = LEFT; }
 		if (window.keystatus[SDL_SCANCODE_D]) { snake.head.next = RIGHT; }
 	}
-	while (SDL_PollEvent(&window.event))
+	while (SDL_PollEvent(&window.events))
 	{
-		if (window.event.type == SDL_QUIT) { window.close(); }
-		if (window.event.type == SDL_KEYDOWN && window.event.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
-		if (window.event.type == SDL_MOUSEBUTTONDOWN)
+		if (window.events.type == SDL_QUIT) { game.status = EXIT; }
+		if (window.events.type == SDL_KEYDOWN && window.events.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
+		if (window.events.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == GAMEOVER)
 			{
@@ -148,11 +150,10 @@ void Game::event()
 
 void Game::display_info()
 {
-	char info[INFO_MAX_LEN];
-	SDL_snprintf(info, INFO_MAX_LEN, "Length: %d", snake.body.size() + 1);
-	window.text(info, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
-	SDL_snprintf(info, INFO_MAX_LEN, "Score: %d", score);
-	window.text(info, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	SDL_snprintf(text, TEXT_MAX_LEN, "Length: %d", snake.body.size() + 1);
+	window.text(text, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	SDL_snprintf(text, TEXT_MAX_LEN, "Score: %d", score);
+	window.text(text, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 
 	switch (status)
 	{
@@ -192,7 +193,7 @@ void Snake::init()
 
 	for (int i = 1; i < SNAKE_INIT_LENGTH; i++)
 	{
-		body.push_back({ head.x - i,head.y });
+		body.push_back({ head.x - i, head.y });
 	}
 }
 
@@ -224,7 +225,7 @@ void Snake::move()
 
 void Snake::crash()
 {
-	Position front = { head.x,head.y };
+	Position front = { head.x, head.y };
 	bool crash = false;
 
 	if (head.next == -head.next_last) { head.next = head.next_last; }

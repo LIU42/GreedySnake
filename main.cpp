@@ -16,10 +16,11 @@ int main(int argc, char* argv[])
 	game.init();
 	game.start_main_interval();
 
-	while (true)
+	while (game.status != EXIT)
 	{
-		game.event();
+		game.events();
 		SDL_Delay(USER_INPUT_DELAY);
 	}
+	window.close();
 	return 0;
 }

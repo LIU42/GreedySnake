@@ -37,7 +37,7 @@ class Window
 	public:
 		HINSTANCE hinstance;
 		SDL_Window* window;
-		SDL_Event event;
+		SDL_Event events;
 		TTF_Font* font;
 		SDL_Rect screen_rect;
 		SDL_Rect block_rect;
@@ -60,8 +60,8 @@ class Window
 		void init();
 		void load_image();
 		void load_font();
-		void delete_image();
-		void delete_font();
+		void free_image();
+		void free_font();
 		void close();
 };
 
@@ -71,6 +71,7 @@ class Game
 		SDL_TimerID main_interval;
 		int score;
 		int status;
+		char text[TEXT_MAX_LEN];
 
 	public:
 		default_random_engine random;
@@ -82,9 +83,9 @@ class Game
 		void init();
 		void add_food(int);
 		void start_main_interval();
-		void delete_timer();
+		void end_main_interval();
 		void update();
-		void event();
+		void events();
 		void display_info();
 		void display_food();
 		void display();
