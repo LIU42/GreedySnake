@@ -270,9 +270,6 @@ void Snake::eat()
 
 void Snake::display()
 {
-	for (int i = 0; i < body.size(); i++)
-	{
-		window.block(window.snake_body, body[i].x, body[i].y);
-	}
+	for (int i = 0; i < body.size(); i++) { window.block(window.snake_body, body[i].x, body[i].y); }
 	window.block(window.snake_body, head.x, head.y);
 }
