@@ -20,6 +20,7 @@
 #define TEXT_RECT_HEIGHT 20
 #define TEXT_BORDER 4
 #define TEXT_MAX_LEN 30
+#define TEXT_COLOR { 0, 0, 0 }
 
 #define START 0
 #define PLAYING 1
