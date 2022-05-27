@@ -10,11 +10,11 @@ vector <Food> food;
 int main(int argc, char* argv[])
 {
 	window.init();
-	window.load_image();
-	window.load_font();
+	window.loadImage();
+	window.loadFont();
 
 	game.init();
-	game.start_main_interval();
+	game.startMainInterval();
 
 	while (game.status != EXIT)
 	{

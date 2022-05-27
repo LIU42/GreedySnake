@@ -25,7 +25,7 @@ struct Head
 	int x;
 	int y;
 	int next;
-	int next_last;
+	int nextLast;
 	bool operator== (Position pos) { return this->x == pos.x && this->y == pos.y; }
 };
 
@@ -35,59 +35,59 @@ typedef Position Food;
 class Window
 {
 	public:
-		HINSTANCE hinstance;
+		HINSTANCE hInstance;
 		SDL_Window* window;
 		SDL_Event events;
 		TTF_Font* font;
-		SDL_Rect screen_rect;
-		SDL_Rect block_rect;
+		SDL_Rect screenRect;
+		SDL_Rect blockRect;
 		SDL_PixelFormat* format;
-		const Uint8* keystatus;
+		const Uint8* keyStatus;
 
 	public:
 		SDL_Surface* surface;
-		SDL_Surface* background;
-		SDL_Surface* snake_body;
-		SDL_Surface* food_red;
+		SDL_Surface* backgroundImg;
+		SDL_Surface* snakeImg;
+		SDL_Surface* foodImg;
 
 	public:
-		SDL_RWops* get_resource(HINSTANCE, LPCWSTR, LPCWSTR);
-		SDL_Surface* load_surface(DWORD);
+		SDL_RWops* getResource(HINSTANCE, LPCWSTR, LPCWSTR);
+		SDL_Surface* loadSurface(DWORD);
 
 	public:
 		void text(const char*, int, int);
 		void block(SDL_Surface*, int, int);
 		void init();
-		void load_image();
-		void load_font();
-		void free_image();
-		void free_font();
+		void loadImage();
+		void loadFont();
+		void freeImage();
+		void freeFont();
 		void close();
 };
 
 class Game
 {
 	public:
-		SDL_TimerID main_interval;
+		SDL_TimerID mainInterval;
 		int score;
 		int status;
 		char text[TEXT_MAX_LEN];
 
 	public:
 		default_random_engine random;
-		uniform_int_distribution <int> rand_X;
-		uniform_int_distribution <int> rand_Y;
+		uniform_int_distribution <int> randX;
+		uniform_int_distribution <int> randY;
 
 	public:
 		Game();
 		void init();
-		void add_food(int);
-		void start_main_interval();
-		void end_main_interval();
+		void addFood(int);
+		void startMainInterval();
+		void endMainInterval();
 		void update();
 		void events();
-		void display_info();
-		void display_food();
+		void displayInfo();
+		void displayFood();
 		void display();
 };
 
@@ -97,7 +97,7 @@ class Snake
 		Head head;
 		vector <Body> body;
 		Body temp;
-		bool alive;
+		bool isAlive;
 
 	public:
 		void init();
