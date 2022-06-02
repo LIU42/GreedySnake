@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// ÖÐÎÄ(¼òÌå£¬ÖÐ¹ú) resources
+// ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½å£¬ï¿½Ð¹ï¿½) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
 LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
@@ -50,11 +50,11 @@ END
 // PNG
 //
 
-IDB_PNG1                PNG                     "Img\\background.png"
+IDB_PNG1                PNG                     "Image\\background.png"
 
-IDB_PNG2                PNG                     "Img\\snake.png"
+IDB_PNG2                PNG                     "Image\\snake.png"
 
-IDB_PNG3                PNG                     "Img\\food.png"
+IDB_PNG3                PNG                     "Image\\food.png"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -72,9 +72,9 @@ IDR_FONT1               FONT                    "Fonts\\consola.ttf"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "Img\\icon.ico"
+IDI_ICON1               ICON                    "Image\\icon.ico"
 
-#endif    // ÖÐÎÄ(¼òÌå£¬ÖÐ¹ú) resources
+#endif    // ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½å£¬ï¿½Ð¹ï¿½) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
