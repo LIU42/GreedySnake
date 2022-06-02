@@ -211,14 +211,8 @@ void Snake::move()
 			case LEFT: head.x -= 1; break;
 			case RIGHT: head.x += 1; break;
 		}
-
-		Body temp;
-		for (int i = 0; i < body.size(); i++)
-		{
-			temp = Snake::temp;
-			Snake::temp = body[i];
-			body[i] = temp;
-		}
+		body.insert(body.begin(), temp);
+		body.pop_back();
 		head.nextLast = head.next;
 	}
 }
