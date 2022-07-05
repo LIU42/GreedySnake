@@ -2,25 +2,21 @@
 
 using namespace std;
 
-Window window;
-Game game;
-Snake snake;
-vector <Food> food;
+MainGame game;
 
 int main(int argc, char* argv[])
 {
-	window.init();
-	window.loadImage();
-	window.loadFont();
-
-	game.init();
+	game.initWindow();
+	game.initGame();
+	game.loadImage();
+	game.loadFont();
 	game.startMainInterval();
 
 	while (game.status != EXIT)
 	{
-		game.events();
-		SDL_Delay(USER_INPUT_DELAY);
+		game.control();
+		SDL_Delay(CONTROL_DELAY);
 	}
-	window.close();
+	game.close();
 	return 0;
 }

@@ -5,19 +5,19 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <Windows.h>
+#include <time.h>
 #include <vector>
-#include <random>
 
 #include "config.h"
 #include "resource.h"
 
 using namespace std;
 
-struct Position
+struct Point
 {
 	int x;
 	int y;
-	bool operator== (Position pos) { return this->x == pos.x && this->y == pos.y; }
+	bool operator== (Point pos) { return this->x == pos.x && this->y == pos.y; }
 };
 
 struct Head
@@ -26,70 +26,36 @@ struct Head
 	int y;
 	int next;
 	int nextLast;
-	bool operator== (Position pos) { return this->x == pos.x && this->y == pos.y; }
+	bool operator== (Point pos) { return this->x == pos.x && this->y == pos.y; }
 };
 
-typedef Position Body;
-typedef Position Food;
-
-class Window
+struct Image
 {
-	public:
-		HINSTANCE hInstance;
-		SDL_Window* window;
-		SDL_Event events;
-		TTF_Font* font;
-		SDL_Rect screenRect;
-		SDL_Rect blockRect;
-		SDL_PixelFormat* format;
-		const Uint8* keyStatus;
-
-	public:
-		SDL_Surface* surface;
-		SDL_Surface* backgroundImg;
-		SDL_Surface* snakeImg;
-		SDL_Surface* foodImg;
-
-	public:
-		SDL_RWops* getResource(HINSTANCE, LPCWSTR, LPCWSTR);
-		SDL_Surface* loadSurface(DWORD);
-
-	public:
-		void text(const char*, int, int);
-		void block(SDL_Surface*, int, int);
-		void init();
-		void loadImage();
-		void loadFont();
-		void freeImage();
-		void freeFont();
-		void close();
+	SDL_PixelFormat* format;
+	SDL_Surface* surface;
+	SDL_Surface* background;
+	SDL_Surface* snake;
+	SDL_Surface* food;
 };
 
-class Game
+struct Rect
 {
-	public:
-		SDL_TimerID mainInterval;
-		int score;
-		int status;
-		char text[TEXT_MAX_LEN];
-
-	public:
-		default_random_engine random;
-		uniform_int_distribution <int> randX;
-		uniform_int_distribution <int> randY;
-
-	public:
-		Game();
-		void init();
-		void addFood(int);
-		void startMainInterval();
-		void endMainInterval();
-		void update();
-		void events();
-		void displayInfo();
-		void displayFood();
-		void display();
+	SDL_Rect screen;
+	SDL_Rect block;
 };
+
+struct Font
+{
+	TTF_Font* info;
+};
+
+struct Timer
+{
+	SDL_TimerID mainInterval;
+};
+
+typedef Point Body;
+typedef Point Food;
 
 class Snake
 {
@@ -107,8 +73,53 @@ class Snake
 		void display();
 };
 
-extern Window window;
-extern Game game;
-extern Snake snake;
-extern vector <Food> food;
+class MainGame
+{
+	public:
+		HINSTANCE hInstance;
+		SDL_Window* window;
+		SDL_Event events;
+		const Uint8* keyStatus;
+
+	public:
+		Image image;
+		Timer timer;
+		Font font;
+		Rect rect;
+
+	public:
+		Snake snake;
+		vector <Food> food;
+
+	public:
+		int score;
+		int status;
+
+	public:
+		SDL_RWops* getResource(HINSTANCE, LPCWSTR, LPCWSTR);
+		SDL_Surface* loadSurface(int);
+
+	public:
+		void initWindow();
+		void initGame();
+		void loadImage();
+		void loadFont();
+		void freeImage();
+		void freeFont();
+		void startMainInterval();
+		void endMainInterval();
+		void close();
+
+	public:
+		void addFood(int);
+		void update();
+		void control();
+		void displayText(const char*, int, int);
+		void displayBlock(SDL_Surface*, int, int);
+		void displayInfo();
+		void displayFood();
+		void display();
+};
+
+extern MainGame game;
 #endif

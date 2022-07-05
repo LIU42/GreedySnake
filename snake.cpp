@@ -2,7 +2,14 @@
 
 using namespace std;
 
-SDL_RWops* Window::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
+Uint32 mainIntervalCallback(Uint32 interval, void* param)
+{
+	game.update();
+	game.display();
+	return interval;
+}
+
+SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 {
 	HRSRC hRsrc = FindResource(hInst, name, type);
 	DWORD size = SizeofResource(hInst, hRsrc);
@@ -10,68 +17,58 @@ SDL_RWops* Window::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 	return SDL_RWFromConstMem(data, size);
 }
 
-SDL_Surface* Window::loadSurface(DWORD ID)
+SDL_Surface* MainGame::loadSurface(int id)
 {
-	SDL_RWops* src = getResource(hInstance, MAKEINTRESOURCE(ID), TEXT("PNG"));
-	SDL_Surface* originImage = IMG_LoadPNG_RW(src);
-	SDL_Surface* convertImage = SDL_ConvertSurface(originImage, format, NULL);
-	SDL_FreeSurface(originImage);
+	SDL_RWops* src = getResource(hInstance, MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);
+	SDL_Surface* convertSurface = SDL_ConvertSurface(originSurface, image.format, NULL);
+	SDL_FreeSurface(originSurface);
 	SDL_FreeRW(src);
-	return convertImage;
+	return convertSurface;
 }
 
-void Window::text(const char* text, int x, int y)
-{
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
-	SDL_BlitSurface(textSurface, NULL, surface, &textRect);
-	SDL_FreeSurface(textSurface);
-}
-
-void Window::block(SDL_Surface* image, int x, int y)
-{
-	blockRect = { BORDER + BLOCK_WIDTH * x, BORDER + BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH };
-	SDL_BlitSurface(image, NULL, surface, &blockRect);
-}
-
-void Window::init()
+void MainGame::initWindow()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	hInstance = GetModuleHandle(0);
 	window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-	surface = SDL_GetWindowSurface(window);
-	format = SDL_AllocFormat(IMG_FORMAT);
-	screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	keyStatus = SDL_GetKeyboardState(NULL);
+	SDL_GetWindowSize(window, &rect.screen.w, &rect.screen.h);
 }
 
-void Window::loadImage()
+void MainGame::loadImage()
 {
-	backgroundImg = loadSurface(IDB_PNG1);
-	snakeImg = loadSurface(IDB_PNG2);
-	foodImg = loadSurface(IDB_PNG3);
+	image.format = SDL_AllocFormat(IMG_FORMAT);
+	image.surface = SDL_GetWindowSurface(window);
+	image.background = loadSurface(IDB_PNG1);
+	image.snake = loadSurface(IDB_PNG2);
+	image.food = loadSurface(IDB_PNG3);
 }
 
-void Window::loadFont()
+void MainGame::loadFont()
 {
 	TTF_Init();
-	font = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font.info = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
-void Window::freeImage()
+void MainGame::startMainInterval() { timer.mainInterval = SDL_AddTimer(GAME_INTERVAL, mainIntervalCallback, NULL); }
+
+void MainGame::freeImage()
 {
-	SDL_FreeSurface(backgroundImg);
-	SDL_FreeSurface(snakeImg);
-	SDL_FreeSurface(foodImg);
+	SDL_FreeFormat(image.format);
+	SDL_FreeSurface(image.background);
+	SDL_FreeSurface(image.snake);
+	SDL_FreeSurface(image.food);
 }
 
-void Window::freeFont() { TTF_CloseFont(font); }
+void MainGame::freeFont() { TTF_CloseFont(font.info); }
 
-void Window::close()
+void MainGame::endMainInterval() { SDL_RemoveTimer(timer.mainInterval); }
+
+void MainGame::close()
 {
 	SDL_DestroyWindow(window);
-	SDL_FreeFormat(format);
-	game.endMainInterval();
+	endMainInterval();
 	freeImage();
 	freeFont();
 	TTF_Quit();
@@ -79,22 +76,21 @@ void Window::close()
 	SDL_Quit();
 }
 
-Game::Game() : random((unsigned)(time(NULL))), randX(0, TABLE_X_MAX - 1), randY(0, TABLE_Y_MAX - 1) {}
-
-void Game::init()
+void MainGame::initGame()
 {
 	score = 0;
 	status = START;
 	snake.init();
 	addFood(FOOD_MAX_COUNT);
+	srand((unsigned)time(NULL));
 }
 
-void Game::addFood(int add_food_count = 1)
+void MainGame::addFood(int addFoodCount = 1)
 {
-	for (int i = 0; i < add_food_count; i++)
+	for (int i = 0; i < addFoodCount; i++)
 	{
-		int x = randX(random);
-		int y = randY(random);
+		int x = rand() % TABLE_COLS;
+		int y = rand() % TABLE_ROWS;
 		Body key = { x, y };
 
 		if (count(snake.body.begin(), snake.body.end(), key) || count(food.begin(), food.end(), key) || snake.head == key) { i--; }
@@ -102,17 +98,7 @@ void Game::addFood(int add_food_count = 1)
 	}
 }
 
-Uint32 mainIntervalFunction(Uint32 interval, void* param)
-{
-	game.update();
-	game.display();
-	return interval;
-}
-
-void Game::startMainInterval() { mainInterval = SDL_AddTimer(GAME_INTERVAL, mainIntervalFunction, NULL); }
-void Game::endMainInterval() { SDL_RemoveTimer(mainInterval); }
-
-void Game::update()
+void MainGame::update()
 {
 	if (status == PLAYING)
 	{
@@ -122,68 +108,84 @@ void Game::update()
 	}
 }
 
-void Game::events()
+void MainGame::control()
 {
 	if (status == PLAYING)
 	{
-		if (window.keyStatus[SDL_SCANCODE_W]) { snake.head.next = UP; }
-		if (window.keyStatus[SDL_SCANCODE_S]) { snake.head.next = DOWN; }
-		if (window.keyStatus[SDL_SCANCODE_A]) { snake.head.next = LEFT; }
-		if (window.keyStatus[SDL_SCANCODE_D]) { snake.head.next = RIGHT; }
+		if (keyStatus[SDL_SCANCODE_W]) { snake.head.next = UP; }
+		if (keyStatus[SDL_SCANCODE_S]) { snake.head.next = DOWN; }
+		if (keyStatus[SDL_SCANCODE_A]) { snake.head.next = LEFT; }
+		if (keyStatus[SDL_SCANCODE_D]) { snake.head.next = RIGHT; }
 	}
-	while (SDL_PollEvent(&window.events))
+	while (SDL_PollEvent(&events))
 	{
-		if (window.events.type == SDL_QUIT) { status = EXIT; }
-		if (window.events.type == SDL_KEYDOWN && window.events.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
-		if (window.events.type == SDL_MOUSEBUTTONDOWN)
+		if (events.type == SDL_QUIT) { status = EXIT; }
+		if (events.type == SDL_KEYDOWN && events.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
+		if (events.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == GAMEOVER)
 			{
 				food.clear();
 				snake.init();
-				init();
+				initGame();
 			}
 			status = PLAYING;
 		}
 	}
 }
 
-void Game::displayInfo()
+void MainGame::displayText(const char* text, int x, int y)
 {
+	SDL_Surface* textSurface = TTF_RenderText_Blended(font.info, text, TEXT_COLOR);
+	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
+	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
+	SDL_FreeSurface(textSurface);
+}
+
+void MainGame::displayBlock(SDL_Surface* blockImg, int x, int y)
+{
+	rect.block = { BORDER + BLOCK_WIDTH * x, BORDER + BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH };
+	SDL_BlitSurface(blockImg, NULL, image.surface, &rect.block);
+}
+
+void MainGame::displayInfo()
+{
+	static char text[TEXT_MAX_LEN];
+
 	SDL_snprintf(text, TEXT_MAX_LEN, "Length: %d", snake.body.size() + 1);
-	window.text(text, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	displayText(text, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 	SDL_snprintf(text, TEXT_MAX_LEN, "Score: %d", score);
-	window.text(text, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	displayText(text, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 
 	switch (status)
 	{
-		case START: window.text("Click anywhere to START...", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
-		case PAUSE: window.text("Click anywhere to resume...", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
-		case GAMEOVER: window.text("GAMEOVER!", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
+		case START: displayText("Click anywhere to START...", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
+		case PAUSE: displayText("Click anywhere to RESUME...", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
+		case GAMEOVER: displayText("GAMEOVER!", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
 	}
 }
 
-void Game::displayFood()
+void MainGame::displayFood()
 {
 	for (int i = 0; i < food.size(); i++)
 	{
-		window.block(window.foodImg, food[i].x, food[i].y);
+		displayBlock(image.food, food[i].x, food[i].y);
 	}
 }
 
-void Game::display()
+void MainGame::display()
 {
-	SDL_BlitSurface(window.backgroundImg, NULL, window.surface, &window.screenRect);
+	SDL_BlitSurface(image.background, NULL, image.surface, &rect.screen);
 	displayInfo();
 	displayFood();
 	snake.display();
-	SDL_UpdateWindowSurface(window.window);
+	SDL_UpdateWindowSurface(game.window);
 }
 
 void Snake::init()
 {
-	head.x = TABLE_X_MAX / 2;
-	head.y = TABLE_Y_MAX / 2;
+	head.x = TABLE_COLS / 2;
+	head.y = TABLE_ROWS / 2;
 	head.next = RIGHT;
 	head.nextLast = RIGHT;
 	temp.x = 0;
@@ -219,7 +221,7 @@ void Snake::move()
 
 void Snake::crash()
 {
-	Position front = { head.x, head.y };
+	Point front = { head.x, head.y };
 	bool isCrash = false;
 
 	if (head.next == -head.nextLast) { head.next = head.nextLast; }
@@ -232,7 +234,7 @@ void Snake::crash()
 		case RIGHT: front.x += 1; break;
 	}
 
-	if (front.x < 0 || front.x >= TABLE_X_MAX || front.y < 0 || front.y >= TABLE_Y_MAX) { isCrash = true; }
+	if (front.x < 0 || front.x >= TABLE_COLS || front.y < 0 || front.y >= TABLE_ROWS) { isCrash = true; }
 
 	for (int i = 0; i < body.size(); i++)
 	{
@@ -249,11 +251,11 @@ void Snake::eat()
 {
 	if (isAlive)
 	{
-		for (int i = 0; i < food.size(); i++)
+		for (int i = 0; i < game.food.size(); i++)
 		{
-			if (food[i].x == head.x && food[i].y == head.y)
+			if (game.food[i].x == head.x && game.food[i].y == head.y)
 			{
-				food.erase(food.begin() + i);
+				game.food.erase(game.food.begin() + i);
 				body.push_back(temp);
 				game.addFood();
 				game.score += EAT_SCORE;
@@ -264,6 +266,6 @@ void Snake::eat()
 
 void Snake::display()
 {
-	for (int i = 0; i < body.size(); i++) { window.block(window.snakeImg, body[i].x, body[i].y); }
-	window.block(window.snakeImg, head.x, head.y);
+	for (int i = 0; i < body.size(); i++) { game.displayBlock(game.image.snake, body[i].x, body[i].y); }
+	game.displayBlock(game.image.snake, head.x, head.y);
 }
