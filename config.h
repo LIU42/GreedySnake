@@ -29,7 +29,6 @@
 #define EXIT 4
 
 #define SNAKE_INIT_LENGTH 10
-#define FOOD_MAX_COUNT 1
 #define EAT_SCORE 10
 
 #define UP 1

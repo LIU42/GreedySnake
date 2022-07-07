@@ -17,7 +17,11 @@ struct Point
 {
 	int x;
 	int y;
-	bool operator== (Point pos) { return this->x == pos.x && this->y == pos.y; }
+
+	bool operator == (Point point)
+	{
+		return this->x == point.x && this->y == point.y;
+	}
 };
 
 struct Head
@@ -26,7 +30,11 @@ struct Head
 	int y;
 	int next;
 	int nextLast;
-	bool operator== (Point pos) { return this->x == pos.x && this->y == pos.y; }
+
+	bool operator == (Point point)
+	{
+		return this->x == point.x && this->y == point.y;
+	}
 };
 
 struct Image
@@ -42,16 +50,6 @@ struct Rect
 {
 	SDL_Rect screen;
 	SDL_Rect block;
-};
-
-struct Font
-{
-	TTF_Font* info;
-};
-
-struct Timer
-{
-	SDL_TimerID mainInterval;
 };
 
 typedef Point Body;
@@ -79,12 +77,12 @@ class MainGame
 		HINSTANCE hInstance;
 		SDL_Window* window;
 		SDL_Event events;
+		TTF_Font* font;
+		SDL_TimerID mainInterval;
 		const Uint8* keyStatus;
 
 	public:
 		Image image;
-		Timer timer;
-		Font font;
 		Rect rect;
 
 	public:
@@ -111,7 +109,7 @@ class MainGame
 		void close();
 
 	public:
-		void addFood(int);
+		void addFood();
 		void update();
 		void control();
 		void displayText(const char*, int, int);

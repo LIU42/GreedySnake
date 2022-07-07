@@ -6,6 +6,8 @@ MainGame game;
 
 int main(int argc, char* argv[])
 {
+	srand((unsigned)time(NULL));
+
 	game.initWindow();
 	game.initGame();
 	game.loadImage();

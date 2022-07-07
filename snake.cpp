@@ -2,13 +2,6 @@
 
 using namespace std;
 
-Uint32 mainIntervalCallback(Uint32 interval, void* param)
-{
-	game.update();
-	game.display();
-	return interval;
-}
-
 SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 {
 	HRSRC hRsrc = FindResource(hInst, name, type);
@@ -48,10 +41,17 @@ void MainGame::loadImage()
 void MainGame::loadFont()
 {
 	TTF_Init();
-	font.info = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
-void MainGame::startMainInterval() { timer.mainInterval = SDL_AddTimer(GAME_INTERVAL, mainIntervalCallback, NULL); }
+Uint32 mainIntervalCallback(Uint32 interval, void* param)
+{
+	game.update();
+	game.display();
+	return interval;
+}
+
+void MainGame::startMainInterval() { mainInterval = SDL_AddTimer(GAME_INTERVAL, mainIntervalCallback, NULL); }
 
 void MainGame::freeImage()
 {
@@ -61,9 +61,9 @@ void MainGame::freeImage()
 	SDL_FreeSurface(image.food);
 }
 
-void MainGame::freeFont() { TTF_CloseFont(font.info); }
+void MainGame::freeFont() { TTF_CloseFont(font); }
 
-void MainGame::endMainInterval() { SDL_RemoveTimer(timer.mainInterval); }
+void MainGame::endMainInterval() { SDL_RemoveTimer(mainInterval); }
 
 void MainGame::close()
 {
@@ -81,20 +81,22 @@ void MainGame::initGame()
 	score = 0;
 	status = START;
 	snake.init();
-	addFood(FOOD_MAX_COUNT);
-	srand((unsigned)time(NULL));
+	addFood();
 }
 
-void MainGame::addFood(int addFoodCount = 1)
+void MainGame::addFood()
 {
-	for (int i = 0; i < addFoodCount; i++)
+	while (true)
 	{
 		int x = rand() % TABLE_COLS;
 		int y = rand() % TABLE_ROWS;
-		Body key = { x, y };
+		Point point = { x, y };
 
-		if (count(snake.body.begin(), snake.body.end(), key) || count(food.begin(), food.end(), key) || snake.head == key) { i--; }
-		else { food.push_back(key); }
+		if (!count(snake.body.begin(), snake.body.end(), point) && !count(food.begin(), food.end(), point) && !(snake.head == point))
+		{
+			food.push_back(point);
+			break;
+		}
 	}
 }
 
@@ -136,7 +138,7 @@ void MainGame::control()
 
 void MainGame::displayText(const char* text, int x, int y)
 {
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font.info, text, TEXT_COLOR);
+	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
 	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
 	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
 	SDL_FreeSurface(textSurface);
@@ -179,7 +181,7 @@ void MainGame::display()
 	displayInfo();
 	displayFood();
 	snake.display();
-	SDL_UpdateWindowSurface(game.window);
+	SDL_UpdateWindowSurface(window);
 }
 
 void Snake::init()
