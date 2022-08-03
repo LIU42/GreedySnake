@@ -17,24 +17,13 @@ struct Point
 {
 	int x;
 	int y;
-
-	bool operator == (Point point)
-	{
-		return this->x == point.x && this->y == point.y;
-	}
+	bool operator == (Point point) { return this->x == point.x && this->y == point.y; }
 };
 
-struct Head
+struct Head : Point
 {
-	int x;
-	int y;
 	int next;
 	int nextLast;
-
-	bool operator == (Point point)
-	{
-		return this->x == point.x && this->y == point.y;
-	}
 };
 
 struct Image

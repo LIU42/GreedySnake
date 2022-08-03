@@ -138,8 +138,13 @@ void MainGame::control()
 
 void MainGame::displayText(const char* text, int x, int y)
 {
-	SDL_Surface* textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	SDL_Rect textRect = { x, y, TEXT_RECT_WIDTH, TEXT_RECT_HEIGHT };
+	static SDL_Surface* textSurface = nullptr;
+	static SDL_Rect textRect = SDL_Rect();
+
+	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
+	textRect.x = x;
+	textRect.y = y;
+
 	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
 	SDL_FreeSurface(textSurface);
 }
