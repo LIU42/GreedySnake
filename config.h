@@ -10,14 +10,12 @@
 
 #define TABLE_WIDTH 600
 #define TABLE_HEIGHT 400
-#define TABLE_COLS 30
-#define TABLE_ROWS 20
+#define TABLE_ROWS 30
+#define TABLE_COLS 20
 #define BLOCK_WIDTH 20
 #define BORDER 10
 
 #define FONT_SIZE 14
-#define TEXT_RECT_WIDTH 200
-#define TEXT_RECT_HEIGHT 20
 #define TEXT_BORDER 4
 #define TEXT_MAX_LEN 30
 #define TEXT_COLOR { 0, 0, 0 }

@@ -51,7 +51,10 @@ Uint32 mainIntervalCallback(Uint32 interval, void* param)
 	return interval;
 }
 
-void MainGame::startMainInterval() { mainInterval = SDL_AddTimer(GAME_INTERVAL, mainIntervalCallback, NULL); }
+void MainGame::startMainInterval()
+{
+	mainInterval = SDL_AddTimer(GAME_INTERVAL, mainIntervalCallback, NULL);
+}
 
 void MainGame::freeImage()
 {
@@ -61,9 +64,15 @@ void MainGame::freeImage()
 	SDL_FreeSurface(image.food);
 }
 
-void MainGame::freeFont() { TTF_CloseFont(font); }
+void MainGame::freeFont()
+{
+	TTF_CloseFont(font);
+}
 
-void MainGame::endMainInterval() { SDL_RemoveTimer(mainInterval); }
+void MainGame::endMainInterval()
+{
+	SDL_RemoveTimer(mainInterval);
+}
 
 void MainGame::close()
 {
@@ -86,15 +95,15 @@ void MainGame::initGame()
 
 void MainGame::addFood()
 {
+	static Point desPoint;
+
 	while (true)
 	{
-		int x = rand() % TABLE_COLS;
-		int y = rand() % TABLE_ROWS;
-		Point point = { x, y };
+		desPoint = { rand() % TABLE_ROWS, rand() % TABLE_COLS };
 
-		if (!count(snake.body.begin(), snake.body.end(), point) && !count(food.begin(), food.end(), point) && !(snake.head == point))
+		if (!count(snake.body.begin(), snake.body.end(), desPoint) && !count(food.begin(), food.end(), desPoint) && !(snake.head == desPoint))
 		{
-			food.push_back(point);
+			food.push_back(desPoint);
 			break;
 		}
 	}
@@ -166,10 +175,11 @@ void MainGame::displayInfo()
 
 	switch (status)
 	{
-		case START: displayText("Click anywhere to START...", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
-		case PAUSE: displayText("Click anywhere to RESUME...", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
-		case GAMEOVER: displayText("GAMEOVER!", BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER)); break;
+		case START: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to START..."); break;
+		case PAUSE: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to RESUME..."); break;
+		case GAMEOVER: SDL_snprintf(text, TEXT_MAX_LEN, "GAMEOVER!"); break;
 	}
+	displayText(text, BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
 }
 
 void MainGame::displayFood()
@@ -191,12 +201,10 @@ void MainGame::display()
 
 void Snake::init()
 {
-	head.x = TABLE_COLS / 2;
-	head.y = TABLE_ROWS / 2;
+	head.x = TABLE_ROWS / 2;
+	head.y = TABLE_COLS / 2;
 	head.next = RIGHT;
 	head.nextLast = RIGHT;
-	temp.x = 0;
-	temp.y = 0;
 	isAlive = true;
 	body.clear();
 
@@ -210,8 +218,7 @@ void Snake::move()
 {
 	if (isAlive)
 	{
-		temp.x = head.x;
-		temp.y = head.y;
+		temp = head;
 
 		switch (head.next)
 		{
@@ -228,24 +235,27 @@ void Snake::move()
 
 void Snake::crash()
 {
-	Point front = { head.x, head.y };
-	bool isCrash = false;
+	static Point frontPoint;
+	static bool isCrash;
+
+	frontPoint = head;
+	isCrash = false;
 
 	if (head.next == -head.nextLast) { head.next = head.nextLast; }
 
 	switch (head.next)
 	{
-		case UP: front.y -= 1; break;
-		case DOWN: front.y += 1; break;
-		case LEFT: front.x -= 1; break;
-		case RIGHT: front.x += 1; break;
+		case UP: frontPoint.y -= 1; break;
+		case DOWN: frontPoint.y += 1; break;
+		case LEFT: frontPoint.x -= 1; break;
+		case RIGHT: frontPoint.x += 1; break;
 	}
 
-	if (front.x < 0 || front.x >= TABLE_COLS || front.y < 0 || front.y >= TABLE_ROWS) { isCrash = true; }
+	if (frontPoint.x < 0 || frontPoint.x >= TABLE_ROWS || frontPoint.y < 0 || frontPoint.y >= TABLE_COLS) { isCrash = true; }
 
 	for (int i = 0; i < body.size(); i++)
 	{
-		if (body[i].x == front .x && body[i].y == front.y) { isCrash = true; }
+		if (body[i].x == frontPoint .x && body[i].y == frontPoint.y) { isCrash = true; }
 	}
 	if (isCrash)
 	{

@@ -47,9 +47,9 @@ typedef Point Food;
 class Snake
 {
 	public:
+		Point temp;
 		Head head;
 		vector <Body> body;
-		Body temp;
 		bool isAlive;
 
 	public:
