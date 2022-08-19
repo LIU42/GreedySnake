@@ -38,18 +38,4 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="Img\background.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="Img\snake.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="Img\food.png">
-      <Filter>资源文件</Filter>
-    </Image>
-    <Image Include="Img\icon.ico">
-      <Filter>资源文件</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

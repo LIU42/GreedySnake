@@ -173,12 +173,6 @@
   <ItemGroup>
     <ResourceCompile Include="Snake.rc" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="Img\background.png" />
-    <Image Include="Img\food.png" />
-    <Image Include="Img\icon.ico" />
-    <Image Include="Img\snake.png" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

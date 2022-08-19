@@ -1,7 +1,5 @@
 #include "snake.h"
 
-using namespace std;
-
 SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
 {
 	HRSRC hRsrc = FindResource(hInst, name, type);
@@ -283,6 +281,9 @@ void Snake::eat()
 
 void Snake::display()
 {
-	for (int i = 0; i < body.size(); i++) { game.displayBlock(game.image.snake, body[i].x, body[i].y); }
+	for (int i = 0; i < body.size(); i++)
+	{
+		game.displayBlock(game.image.snake, body[i].x, body[i].y);
+	}
 	game.displayBlock(game.image.snake, head.x, head.y);
 }
