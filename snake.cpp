@@ -117,7 +117,7 @@ void MainGame::update()
 	}
 }
 
-void MainGame::control()
+void MainGame::events()
 {
 	if (status == PLAYING)
 	{
@@ -126,11 +126,11 @@ void MainGame::control()
 		if (keyStatus[SDL_SCANCODE_A]) { snake.head.next = LEFT; }
 		if (keyStatus[SDL_SCANCODE_D]) { snake.head.next = RIGHT; }
 	}
-	while (SDL_PollEvent(&events))
+	while (SDL_PollEvent(&event))
 	{
-		if (events.type == SDL_QUIT) { status = EXIT; }
-		if (events.type == SDL_KEYDOWN && events.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
-		if (events.type == SDL_MOUSEBUTTONDOWN)
+		if (event.type == SDL_QUIT) { status = EXIT; }
+		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
+		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (status == GAMEOVER)
 			{
@@ -143,22 +143,22 @@ void MainGame::control()
 	}
 }
 
-void MainGame::displayText(const char* text, int x, int y)
+void MainGame::displayText(const char* text, Point pos)
 {
 	static SDL_Surface* textSurface = nullptr;
 	static SDL_Rect textRect = SDL_Rect();
 
 	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
-	textRect.x = x;
-	textRect.y = y;
+	textRect.x = pos.x;
+	textRect.y = pos.y;
 
 	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
 	SDL_FreeSurface(textSurface);
 }
 
-void MainGame::displayBlock(SDL_Surface* blockImg, int x, int y)
+void MainGame::displayBlock(SDL_Surface* blockImg, Point pos)
 {
-	rect.block = { BORDER + BLOCK_WIDTH * x, BORDER + BLOCK_WIDTH * y, BLOCK_WIDTH, BLOCK_WIDTH };
+	rect.block = { BORDER + BLOCK_WIDTH * pos.x, BORDER + BLOCK_WIDTH * pos.y, BLOCK_WIDTH, BLOCK_WIDTH };
 	SDL_BlitSurface(blockImg, NULL, image.surface, &rect.block);
 }
 
@@ -167,9 +167,9 @@ void MainGame::displayInfo()
 	static char text[TEXT_MAX_LEN];
 
 	SDL_snprintf(text, TEXT_MAX_LEN, "Length: %d", snake.body.size() + 1);
-	displayText(text, SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	displayText(text, { SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 	SDL_snprintf(text, TEXT_MAX_LEN, "Score: %d", score);
-	displayText(text, SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	displayText(text, { SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 
 	switch (status)
 	{
@@ -177,14 +177,14 @@ void MainGame::displayInfo()
 		case PAUSE: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to RESUME..."); break;
 		case GAMEOVER: SDL_snprintf(text, TEXT_MAX_LEN, "GAMEOVER!"); break;
 	}
-	displayText(text, BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER));
+	displayText(text, { BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 }
 
 void MainGame::displayFood()
 {
 	for (int i = 0; i < food.size(); i++)
 	{
-		displayBlock(image.food, food[i].x, food[i].y);
+		displayBlock(image.food, food[i]);
 	}
 }
 
@@ -283,7 +283,7 @@ void Snake::display()
 {
 	for (int i = 0; i < body.size(); i++)
 	{
-		game.displayBlock(game.image.snake, body[i].x, body[i].y);
+		game.displayBlock(game.image.snake, body[i]);
 	}
-	game.displayBlock(game.image.snake, head.x, head.y);
+	game.displayBlock(game.image.snake, head);
 }

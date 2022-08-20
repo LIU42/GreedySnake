@@ -65,7 +65,7 @@ class MainGame
 	public:
 		HINSTANCE hInstance;
 		SDL_Window* window;
-		SDL_Event events;
+		SDL_Event event;
 		TTF_Font* font;
 		SDL_TimerID mainInterval;
 		const Uint8* keyStatus;
@@ -100,9 +100,9 @@ class MainGame
 	public:
 		void addFood();
 		void update();
-		void control();
-		void displayText(const char*, int, int);
-		void displayBlock(SDL_Surface*, int, int);
+		void events();
+		void displayText(const char*, Point);
+		void displayBlock(SDL_Surface*, Point);
 		void displayInfo();
 		void displayFood();
 		void display();

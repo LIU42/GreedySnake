@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
 
 	while (game.status != EXIT)
 	{
-		game.control();
+		game.events();
 		SDL_Delay(CONTROL_DELAY);
 	}
 	game.close();
