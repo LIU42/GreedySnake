@@ -20,10 +20,13 @@
 #define TEXT_MAX_LEN 30
 #define TEXT_COLOR { 0, 0, 0 }
 
+#define INFO_LENGTH_MARGIN 230
+#define INFO_SCORE_MARGIN 110
+
 #define START 0
 #define PLAYING 1
 #define PAUSE 2
-#define GAMEOVER 3
+#define OVER 3
 #define EXIT 4
 
 #define SNAKE_INIT_LENGTH 10

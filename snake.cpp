@@ -97,7 +97,8 @@ void MainGame::addFood()
 
 	while (true)
 	{
-		desPoint = { rand() % TABLE_ROWS, rand() % TABLE_COLS };
+		desPoint.x = rand() % TABLE_ROWS;
+		desPoint.y = rand() % TABLE_COLS;
 
 		if (!count(snake.body.begin(), snake.body.end(), desPoint) && !count(food.begin(), food.end(), desPoint) && !(snake.head == desPoint))
 		{
@@ -132,7 +133,7 @@ void MainGame::events()
 		if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_p && status == PLAYING) { status = PAUSE; }
 		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
-			if (status == GAMEOVER)
+			if (status == OVER)
 			{
 				food.clear();
 				snake.init();
@@ -145,8 +146,8 @@ void MainGame::events()
 
 void MainGame::displayText(const char* text, Point pos)
 {
-	static SDL_Surface* textSurface = nullptr;
-	static SDL_Rect textRect = SDL_Rect();
+	static SDL_Surface* textSurface;
+	static SDL_Rect textRect;
 
 	textSurface = TTF_RenderText_Blended(font, text, TEXT_COLOR);
 	textRect.x = pos.x;
@@ -167,17 +168,20 @@ void MainGame::displayInfo()
 	static char text[TEXT_MAX_LEN];
 
 	SDL_snprintf(text, TEXT_MAX_LEN, "Length: %d", snake.body.size() + 1);
-	displayText(text, { SCREEN_WIDTH - 230, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
+	displayText(text, { SCREEN_WIDTH - INFO_LENGTH_MARGIN, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 	SDL_snprintf(text, TEXT_MAX_LEN, "Score: %d", score);
-	displayText(text, { SCREEN_WIDTH - 110, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
+	displayText(text, { SCREEN_WIDTH - INFO_SCORE_MARGIN, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 
-	switch (status)
+	if (status != PLAYING)
 	{
-		case START: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to START..."); break;
-		case PAUSE: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to RESUME..."); break;
-		case GAMEOVER: SDL_snprintf(text, TEXT_MAX_LEN, "GAMEOVER!"); break;
+		switch (status)
+		{
+			case START: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to START..."); break;
+			case PAUSE: SDL_snprintf(text, TEXT_MAX_LEN, "Click anywhere to RESUME..."); break;
+			case OVER: SDL_snprintf(text, TEXT_MAX_LEN, "GAMEOVER!"); break;
+		}
+		displayText(text, { BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 	}
-	displayText(text, { BORDER, SCREEN_HEIGHT - (FONT_SIZE + TEXT_BORDER) });
 }
 
 void MainGame::displayFood()
@@ -257,7 +261,7 @@ void Snake::crash()
 	}
 	if (isCrash)
 	{
-		game.status = GAMEOVER;
+		game.status = OVER;
 		isAlive = false;
 	}
 }
