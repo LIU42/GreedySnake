@@ -6,7 +6,7 @@
 #include <SDL_ttf.h>
 #include <Windows.h>
 #include <time.h>
-#include <vector>
+#include <list>
 
 #include "config.h"
 #include "resource.h"
@@ -49,7 +49,7 @@ class Snake
 	public:
 		Point temp;
 		Head head;
-		vector <Body> body;
+		list <Body> body;
 		bool isAlive;
 
 	public:
@@ -76,7 +76,7 @@ class MainGame
 
 	public:
 		Snake snake;
-		vector <Food> food;
+		list <Food> food;
 
 	public:
 		int score;

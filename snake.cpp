@@ -186,9 +186,9 @@ void MainGame::displayInfo()
 
 void MainGame::displayFood()
 {
-	for (int i = 0; i < food.size(); i++)
+	for (auto it = food.begin(); it != food.end(); ++it)
 	{
-		displayBlock(image.food, food[i]);
+		displayBlock(image.food, *it);
 	}
 }
 
@@ -255,9 +255,9 @@ void Snake::crash()
 
 	if (frontPoint.x < 0 || frontPoint.x >= TABLE_ROWS || frontPoint.y < 0 || frontPoint.y >= TABLE_COLS) { isCrash = true; }
 
-	for (int i = 0; i < body.size(); i++)
+	for (auto it = body.begin(); it != body.end(); ++it)
 	{
-		if (body[i].x == frontPoint .x && body[i].y == frontPoint.y) { isCrash = true; }
+		if (it->x == frontPoint.x && it->y == frontPoint.y) { isCrash = true; }
 	}
 	if (isCrash)
 	{
@@ -270,14 +270,15 @@ void Snake::eat()
 {
 	if (isAlive)
 	{
-		for (int i = 0; i < game.food.size(); i++)
+		for (auto it = game.food.begin(); it != game.food.end(); ++it)
 		{
-			if (game.food[i].x == head.x && game.food[i].y == head.y)
+			if (it->x == head.x && it->y == head.y)
 			{
-				game.food.erase(game.food.begin() + i);
 				body.push_back(temp);
+				game.food.erase(it);
 				game.addFood();
 				game.score += EAT_SCORE;
+				break;
 			}
 		}
 	}
@@ -285,9 +286,9 @@ void Snake::eat()
 
 void Snake::display()
 {
-	for (int i = 0; i < body.size(); i++)
+	for (auto it = body.begin(); it != body.end(); ++it)
 	{
-		game.displayBlock(game.image.snake, body[i]);
+		game.displayBlock(game.image.snake, *it);
 	}
 	game.displayBlock(game.image.snake, head);
 }
