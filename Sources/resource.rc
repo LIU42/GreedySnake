@@ -50,11 +50,11 @@ END
 // PNG
 //
 
-IDB_PNG1                PNG                     "Images\\background.png"
+IDB_PNG1                PNG                     "..\\Images\\background.png"
 
-IDB_PNG2                PNG                     "Images\\snake.png"
+IDB_PNG2                PNG                     "..\\Images\\snake.png"
 
-IDB_PNG3                PNG                     "Images\\food.png"
+IDB_PNG3                PNG                     "..\\Images\\food.png"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ IDB_PNG3                PNG                     "Images\\food.png"
 // Font
 //
 
-IDR_FONT1               FONT                    "Fonts\\consola.ttf"
+IDR_FONT1               FONT                    "..\\Fonts\\consola.ttf"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ IDR_FONT1               FONT                    "Fonts\\consola.ttf"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON1               ICON                    "Images\\icon.ico"
+IDI_ICON1               ICON                    "..\\Images\\icon.ico"
 
 #endif    // ����(���壬�й�) resources
 /////////////////////////////////////////////////////////////////////////////
