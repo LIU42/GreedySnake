@@ -15,26 +15,29 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Sources/main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="snake.cpp">
+    <ClCompile Include="Sources/game.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Sources/snake.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="snake.h">
+    <ClInclude Include="Sources/game.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
+    <ClInclude Include="Sources/resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
+    <ClInclude Include="Sources/snake.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Snake.rc">
+    <ResourceCompile Include="Sources/resource.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -164,16 +164,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="snake.cpp" />
+    <ClCompile Include="Sources/main.cpp" />
+    <ClCompile Include="Sources/game.cpp" />
+    <ClCompile Include="Sources/snake.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="config.h" />
-    <ClInclude Include="resource.h" />
-    <ClInclude Include="snake.h" />
+    <ClInclude Include="Sources/resource.h" />
+    <ClInclude Include="Sources/game.h" />
+    <ClInclude Include="Sources/snake.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Snake.rc" />
+    <ResourceCompile Include="Sources/resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

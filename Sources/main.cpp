@@ -1,9 +1,9 @@
-#include "snake.h"
-
-MainGame game;
+#include "game.h"
 
 int main(int argc, char* argv[])
 {
+	MainGame game;
+
 	srand((unsigned)time(NULL));
 
 	game.initWindow();
@@ -12,10 +12,10 @@ int main(int argc, char* argv[])
 	game.loadFont();
 	game.startMainInterval();
 
-	while (game.status != EXIT)
+	while (game.isRunning())
 	{
 		game.events();
-		SDL_Delay(CONTROL_DELAY);
+		SDL_Delay(game.CONTROL_DELAY);
 	}
 	game.close();
 	return 0;
