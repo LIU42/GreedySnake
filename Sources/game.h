@@ -6,7 +6,6 @@
 #include <SDL_ttf.h>
 #include <Windows.h>
 #include <time.h>
-#include <list>
 
 #include "snake.h"
 #include "resource.h"
@@ -58,12 +57,12 @@ class MainGame
 	private:
 		Image image;
 		Snake snake;
-		list <Food> food;
+		FoodList food;
 		Status status;
 		int score;
 
 	private:
-		SDL_RWops* getResource(HINSTANCE, LPCWSTR, LPCWSTR);
+		SDL_RWops* getResource(LPCWSTR, LPCWSTR);
 		SDL_Surface* loadSurface(int);
 
 	private:

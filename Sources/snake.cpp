@@ -101,12 +101,12 @@ bool Snake::getIsCrashed(int tableRows, int tableCols)
 	return false;
 }
 
-list <Body>::iterator Snake::getBodyBegin()
+BodyList::iterator Snake::getBodyBegin()
 {
 	return body.begin();
 }
 
-list <Body>::iterator Snake::getBodyEnd()
+BodyList::iterator Snake::getBodyEnd()
 {
 	return body.end();
 }

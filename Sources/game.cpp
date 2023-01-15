@@ -1,16 +1,16 @@
 #include "game.h"
 
-SDL_RWops* MainGame::getResource(HINSTANCE hInst, LPCWSTR name, LPCWSTR type)
+SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
-	HRSRC hRsrc = FindResource(hInst, name, type);
-	DWORD size = SizeofResource(hInst, hRsrc);
-	LPVOID data = LockResource(LoadResource(hInst, hRsrc));
+	HRSRC hRsrc = FindResource(hInstance, name, type);
+	DWORD size = SizeofResource(hInstance, hRsrc);
+	LPVOID data = LockResource(LoadResource(hInstance, hRsrc));
 	return SDL_RWFromConstMem(data, size);
 }
 
 SDL_Surface* MainGame::loadSurface(int id)
 {
-	SDL_RWops* src = getResource(hInstance, MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_RWops* src = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
 	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);
 	SDL_Surface* convertSurface = SDL_ConvertSurface(originSurface, image.format, NULL);
 	SDL_FreeSurface(originSurface);
@@ -39,13 +39,13 @@ void MainGame::loadImage()
 void MainGame::loadFont()
 {
 	TTF_Init();
-	font = TTF_OpenFontRW(getResource(hInstance, MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
-Uint32 mainIntervalCallback(Uint32 interval, void* game)
+Uint32 mainIntervalCallback(Uint32 interval, void* pGame)
 {
-	((MainGame*)game)->update();
-	((MainGame*)game)->display();
+	((MainGame*)pGame)->update();
+	((MainGame*)pGame)->display();
 	return interval;
 }
 
@@ -98,18 +98,18 @@ bool MainGame::isRunning()
 
 void MainGame::addFood()
 {
-	static Food foodTemp;
+	static Food temp;
 
 	while (true)
 	{
-		foodTemp.x = rand() % TABLE_ROWS;
-		foodTemp.y = rand() % TABLE_COLS;
+		temp.x = rand() % TABLE_ROWS;
+		temp.y = rand() % TABLE_COLS;
 
-		if (!count(snake.getBodyBegin(), snake.getBodyEnd(), foodTemp) && !count(food.begin(), food.end(), foodTemp))
+		if (!count(snake.getBodyBegin(), snake.getBodyEnd(), temp) && !count(food.begin(), food.end(), temp))
 		{
-			if (snake.getHeadX() != foodTemp.x && snake.getHeadY() != foodTemp.y)
+			if (snake.getHeadX() != temp.x && snake.getHeadY() != temp.y)
 			{
-				food.push_back(foodTemp);
+				food.push_back(temp);
 				break;
 			}
 		}
@@ -177,15 +177,15 @@ void MainGame::events()
 
 void MainGame::displayText(const char* text, int x, int y)
 {
-	static SDL_Surface* textSurface;
-	static SDL_Rect textRect;
+	static SDL_Surface* surface;
+	static SDL_Rect rect;
 
-	textSurface = TTF_RenderText_Blended(font, text, { 0, 0, 0 });
-	textRect.x = x;
-	textRect.y = y;
+	surface = TTF_RenderText_Blended(font, text, { 0, 0, 0 });
+	rect.x = x;
+	rect.y = y;
 
-	SDL_BlitSurface(textSurface, NULL, image.surface, &textRect);
-	SDL_FreeSurface(textSurface);
+	SDL_BlitSurface(surface, NULL, image.surface, &rect);
+	SDL_FreeSurface(surface);
 }
 
 void MainGame::displayBlock(SDL_Surface* blockImg, int x, int y)

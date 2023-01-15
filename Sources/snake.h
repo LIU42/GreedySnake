@@ -22,6 +22,9 @@ struct Head : Block
 typedef Block Body;
 typedef Block Food;
 
+typedef list <Body> BodyList;
+typedef list <Food> FoodList;
+
 class Snake
 {
 	public:
@@ -29,7 +32,7 @@ class Snake
 
 	private:
 		Head head;
-		list <Body> body;
+		BodyList body;
 		Block temp;
 		Block front;
 		bool isAlive;
@@ -41,8 +44,8 @@ class Snake
 		void eat();
 
 	public:
-		list <Body>::iterator getBodyBegin();
-		list <Body>::iterator getBodyEnd();
+		BodyList::iterator getBodyBegin();
+		BodyList::iterator getBodyEnd();
 
 	public:
 		int getHeadX();
