@@ -2,9 +2,10 @@
 
 SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
-	HRSRC hRsrc = FindResource(hInstance, name, type);
-	DWORD size = SizeofResource(hInstance, hRsrc);
-	LPVOID data = LockResource(LoadResource(hInstance, hRsrc));
+	HINSTANCE hInst = sysInfo.info.win.hinstance;
+	HRSRC hRsrc = FindResource(hInst, name, type);
+	DWORD size = SizeofResource(hInst, hRsrc);
+	LPVOID data = LockResource(LoadResource(hInst, hRsrc));
 	return SDL_RWFromConstMem(data, size);
 }
 
@@ -21,10 +22,11 @@ SDL_Surface* MainGame::loadSurface(int id)
 void MainGame::initWindow()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
-	hInstance = GetModuleHandle(0);
+	SDL_VERSION(&sysInfo.version);
 	window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	keyStatus = SDL_GetKeyboardState(NULL);
 	screen = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	SDL_GetWindowWMInfo(window, &sysInfo);
 }
 
 void MainGame::loadImage()
@@ -39,7 +41,7 @@ void MainGame::loadImage()
 void MainGame::loadFont()
 {
 	TTF_Init();
-	font = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
 }
 
 Uint32 mainIntervalCallback(Uint32 interval, void* pGame)
@@ -51,7 +53,7 @@ Uint32 mainIntervalCallback(Uint32 interval, void* pGame)
 
 void MainGame::startMainInterval()
 {
-	mainInterval = SDL_AddTimer(INTERVAL, mainIntervalCallback, this);
+	timer.mainInterval = SDL_AddTimer(INTERVAL, mainIntervalCallback, this);
 }
 
 void MainGame::freeImage()
@@ -64,12 +66,12 @@ void MainGame::freeImage()
 
 void MainGame::freeFont()
 {
-	TTF_CloseFont(font);
+	TTF_CloseFont(font.info);
 }
 
 void MainGame::endMainInterval()
 {
-	SDL_RemoveTimer(mainInterval);
+	SDL_RemoveTimer(timer.mainInterval);
 }
 
 void MainGame::close()
@@ -180,7 +182,7 @@ void MainGame::displayText(const char* text, int x, int y)
 	static SDL_Surface* surface;
 	static SDL_Rect rect;
 
-	surface = TTF_RenderText_Blended(font, text, { 0, 0, 0 });
+	surface = TTF_RenderText_Blended(font.info, text, { 0, 0, 0 });
 	rect.x = x;
 	rect.y = y;
 

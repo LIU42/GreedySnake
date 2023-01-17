@@ -2,9 +2,9 @@
 #define __GAME_H__
 
 #include <SDL.h>
+#include <SDL_syswm.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-#include <Windows.h>
 #include <time.h>
 
 #include "snake.h"
@@ -21,6 +21,16 @@ struct Image
 	SDL_Surface* background;
 	SDL_Surface* snake;
 	SDL_Surface* food;
+};
+
+struct Font
+{
+	TTF_Font* info;
+};
+
+struct Timer
+{
+	SDL_TimerID mainInterval;
 };
 
 class MainGame
@@ -46,16 +56,18 @@ class MainGame
 		static const int INFO_SCORE_MARGIN = 110;
 
 	private:
-		HINSTANCE hInstance;
 		SDL_Window* window;
+		SDL_SysWMinfo sysInfo;
 		SDL_Rect screen;
 		SDL_Event event;
-		TTF_Font* font;
-		SDL_TimerID mainInterval;
 		const Uint8* keyStatus;
 
 	private:
 		Image image;
+		Font font;
+		Timer timer;
+
+	private:
 		Snake snake;
 		FoodList food;
 		Status status;
