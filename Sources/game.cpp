@@ -23,7 +23,7 @@ void MainGame::initWindow()
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	SDL_VERSION(&sysInfo.version);
-	window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	keyStatus = SDL_GetKeyboardState(NULL);
 	screen = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	SDL_GetWindowWMInfo(window, &sysInfo);
@@ -182,7 +182,7 @@ void MainGame::displayText(const char* text, int x, int y)
 	static SDL_Surface* surface;
 	static SDL_Rect rect;
 
-	surface = TTF_RenderText_Blended(font.info, text, { 0, 0, 0 });
+	surface = TTF_RenderText_Blended(font.info, text, BLACK);
 	rect.x = x;
 	rect.y = y;
 

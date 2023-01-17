@@ -6,6 +6,7 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <time.h>
+#include <string>
 
 #include "snake.h"
 #include "resource.h"
@@ -36,6 +37,9 @@ struct Timer
 class MainGame
 {
 	public:
+		static constexpr auto TITLE = "Snake";
+
+	public:
 		static const int SCREEN_WIDTH = 620;
 		static const int SCREEN_HEIGHT = 440;
 		static const int INTERVAL = 250;
@@ -54,6 +58,9 @@ class MainGame
 		static const int TEXT_LENGTH = 30;
 		static const int INFO_LENGTH_MARGIN = 230;
 		static const int INFO_SCORE_MARGIN = 110;
+
+	public:
+		static constexpr SDL_Color BLACK = { 0, 0, 0 };
 
 	private:
 		SDL_Window* window;
