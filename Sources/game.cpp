@@ -5,7 +5,8 @@ SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 	HINSTANCE hInst = sysInfo.info.win.hinstance;
 	HRSRC hRsrc = FindResource(hInst, name, type);
 	DWORD size = SizeofResource(hInst, hRsrc);
-	LPVOID data = LockResource(LoadResource(hInst, hRsrc));
+	HGLOBAL hGlobal = LoadResource(hInst, hRsrc);
+	LPVOID data = LockResource(hGlobal);
 	return SDL_RWFromConstMem(data, size);
 }
 
@@ -41,13 +42,14 @@ void MainGame::loadImage()
 void MainGame::loadFont()
 {
 	TTF_Init();
-	font.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), 1, FONT_SIZE);
+	font.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), true, FONT_SIZE);
 }
 
-Uint32 mainIntervalCallback(Uint32 interval, void* pGame)
+Uint32 MainGame::mainIntervalCallback(Uint32 interval, void* param)
 {
-	((MainGame*)pGame)->update();
-	((MainGame*)pGame)->display();
+	MainGame* pGame = (MainGame*)param;
+	pGame->update();
+	pGame->display();
 	return interval;
 }
 

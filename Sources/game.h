@@ -81,6 +81,9 @@ class MainGame
 		int score;
 
 	private:
+		static Uint32 mainIntervalCallback(Uint32, void*);
+
+	private:
 		SDL_RWops* getResource(LPCWSTR, LPCWSTR);
 		SDL_Surface* loadSurface(int);
 
