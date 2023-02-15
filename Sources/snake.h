@@ -27,7 +27,7 @@ typedef list <Food> FoodList;
 
 class Snake
 {
-	public:
+	private:
 		static const int INIT_LENGTH = 10;
 
 	private:

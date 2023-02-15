@@ -10,39 +10,44 @@ SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 	return SDL_RWFromConstMem(data, size);
 }
 
-SDL_Surface* MainGame::loadSurface(int id)
+SDL_Surface* MainGame::loadSurface(Uint32 id)
 {
-	SDL_RWops* src = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
-	SDL_Surface* originSurface = IMG_LoadPNG_RW(src);
-	SDL_Surface* convertSurface = SDL_ConvertSurface(originSurface, image.format, NULL);
-	SDL_FreeSurface(originSurface);
-	SDL_FreeRW(src);
-	return convertSurface;
+	SDL_RWops* pResource = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_Surface* originalSurface = IMG_LoadPNG_RW(pResource);
+	SDL_Surface* convertedSurface = SDL_ConvertSurface(originalSurface, format, NULL);
+	SDL_FreeSurface(originalSurface);
+	SDL_FreeRW(pResource);
+	return convertedSurface;
+}
+
+void MainGame::initEnvironment()
+{
+	SDL_Init(SDL_INIT_EVERYTHING);
+	IMG_Init(IMG_INIT_PNG);
+	TTF_Init();
+	SDL_VERSION(&sysInfo.version);
 }
 
 void MainGame::initWindow()
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
-	SDL_VERSION(&sysInfo.version);
 	window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+	surface = SDL_GetWindowSurface(window);
+	format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
 	keyStatus = SDL_GetKeyboardState(NULL);
-	screen = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+	screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	SDL_GetWindowWMInfo(window, &sysInfo);
 }
 
 void MainGame::loadImage()
 {
-	image.format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
-	image.surface = SDL_GetWindowSurface(window);
-	image.background = loadSurface(IDB_PNG1);
-	image.snake = loadSurface(IDB_PNG2);
-	image.food = loadSurface(IDB_PNG3);
+	images.background = loadSurface(IDB_PNG1);
+	images.snake = loadSurface(IDB_PNG2);
+	images.food = loadSurface(IDB_PNG3);
 }
 
 void MainGame::loadFont()
 {
-	TTF_Init();
-	font.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), true, FONT_SIZE);
+	fonts.info = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), true, FONT_SIZE);
 }
 
 Uint32 MainGame::mainIntervalCallback(Uint32 interval, void* param)
@@ -55,36 +60,46 @@ Uint32 MainGame::mainIntervalCallback(Uint32 interval, void* param)
 
 void MainGame::startMainInterval()
 {
-	timer.mainInterval = SDL_AddTimer(INTERVAL, mainIntervalCallback, this);
+	timers.mainInterval = SDL_AddTimer(INTERVAL, mainIntervalCallback, this);
 }
 
 void MainGame::freeImage()
 {
-	SDL_FreeFormat(image.format);
-	SDL_FreeSurface(image.background);
-	SDL_FreeSurface(image.snake);
-	SDL_FreeSurface(image.food);
+	SDL_FreeSurface(images.background);
+	SDL_FreeSurface(images.snake);
+	SDL_FreeSurface(images.food);
 }
 
 void MainGame::freeFont()
 {
-	TTF_CloseFont(font.info);
+	TTF_CloseFont(fonts.info);
 }
 
 void MainGame::endMainInterval()
 {
-	SDL_RemoveTimer(timer.mainInterval);
+	SDL_RemoveTimer(timers.mainInterval);
+}
+
+void MainGame::closeWindow()
+{
+	SDL_DestroyWindow(window);
+	SDL_FreeFormat(format);
+}
+
+void MainGame::closeEnvironment()
+{
+	TTF_Quit();
+	IMG_Quit();
+	SDL_Quit();
 }
 
 void MainGame::close()
 {
-	SDL_DestroyWindow(window);
 	endMainInterval();
 	freeImage();
 	freeFont();
-	TTF_Quit();
-	IMG_Quit();
-	SDL_Quit();
+	closeWindow();
+	closeEnvironment();
 }
 
 void MainGame::initGame()
@@ -102,18 +117,18 @@ bool MainGame::isRunning()
 
 void MainGame::addFood()
 {
-	static Food temp;
+	static Food foodTemp;
 
 	while (true)
 	{
-		temp.x = rand() % TABLE_ROWS;
-		temp.y = rand() % TABLE_COLS;
+		foodTemp.x = rand() % TABLE_ROWS;
+		foodTemp.y = rand() % TABLE_COLS;
 
-		if (!count(snake.getBodyBegin(), snake.getBodyEnd(), temp) && !count(food.begin(), food.end(), temp))
+		if (!count(snake.getBodyBegin(), snake.getBodyEnd(), foodTemp) && !count(foodList.begin(), foodList.end(), foodTemp))
 		{
-			if (snake.getHeadX() != temp.x && snake.getHeadY() != temp.y)
+			if (snake.getHeadX() != foodTemp.x && snake.getHeadY() != foodTemp.y)
 			{
-				food.push_back(temp);
+				foodList.push_back(foodTemp);
 				break;
 			}
 		}
@@ -130,12 +145,12 @@ void MainGame::snakeCrash()
 
 void MainGame::snakeEat()
 {
-	for (auto it = food.begin(); it != food.end(); ++it)
+	for (auto it = foodList.begin(); it != foodList.end(); ++it)
 	{
 		if (it->x == snake.getHeadX() && it->y == snake.getHeadY())
 		{
 			snake.eat();
-			food.erase(it);
+			foodList.erase(it);
 			addFood();
 			score += EAT_SCORE;
 			break;
@@ -170,7 +185,7 @@ void MainGame::events()
 		{
 			if (status == OVER)
 			{
-				food.clear();
+				foodList.clear();
 				snake.init(TABLE_ROWS, TABLE_COLS);
 				initGame();
 			}
@@ -181,25 +196,25 @@ void MainGame::events()
 
 void MainGame::displayText(const char* text, int x, int y)
 {
-	static SDL_Surface* surface;
-	static SDL_Rect rect;
+	static SDL_Surface* textSurface;
+	static SDL_Rect textRect;
 
-	surface = TTF_RenderText_Blended(font.info, text, BLACK);
-	rect.x = x;
-	rect.y = y;
+	textSurface = TTF_RenderText_Blended(fonts.info, text, BLACK);
+	textRect.x = x;
+	textRect.y = y;
 
-	SDL_BlitSurface(surface, NULL, image.surface, &rect);
+	SDL_BlitSurface(textSurface, NULL, surface, &textRect);
 	SDL_FreeSurface(surface);
 }
 
 void MainGame::displayBlock(SDL_Surface* blockImg, int x, int y)
 {
-	static SDL_Rect rect;
+	static SDL_Rect blockRect;
 
-	rect.x = BORDER + BLOCK_SIZE * x;
-	rect.y = BORDER + BLOCK_SIZE * y;
+	blockRect.x = BORDER + BLOCK_SIZE * x;
+	blockRect.y = BORDER + BLOCK_SIZE * y;
 
-	SDL_BlitSurface(blockImg, NULL, image.surface, &rect);
+	SDL_BlitSurface(blockImg, NULL, surface, &blockRect);
 }
 
 void MainGame::displayInfo()
@@ -225,9 +240,9 @@ void MainGame::displayInfo()
 
 void MainGame::displayFood()
 {
-	for (auto it = food.begin(); it != food.end(); ++it)
+	for (auto it = foodList.begin(); it != foodList.end(); ++it)
 	{
-		displayBlock(image.food, it->x, it->y);
+		displayBlock(images.food, it->x, it->y);
 	}
 }
 
@@ -235,16 +250,21 @@ void MainGame::displaySnake()
 {
 	for (auto it = snake.getBodyBegin(); it != snake.getBodyEnd(); ++it)
 	{
-		displayBlock(image.snake, it->x, it->y);
+		displayBlock(images.snake, it->x, it->y);
 	}
-	displayBlock(image.snake, snake.getHeadX(), snake.getHeadY());
+	displayBlock(images.snake, snake.getHeadX(), snake.getHeadY());
 }
 
 void MainGame::display()
 {
-	SDL_BlitSurface(image.background, NULL, image.surface, &screen);
+	SDL_BlitSurface(images.background, NULL, surface, &screenRect);
 	displayInfo();
 	displayFood();
 	displaySnake();
 	SDL_UpdateWindowSurface(window);
+}
+
+void MainGame::delay()
+{
+	SDL_Delay(CONTROL_DELAY);
 }

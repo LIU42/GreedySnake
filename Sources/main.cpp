@@ -6,6 +6,7 @@ int main(int argc, char* argv[])
 
 	srand((unsigned)time(NULL));
 
+	game.initEnvironment();
 	game.initWindow();
 	game.initGame();
 	game.loadImage();
@@ -15,7 +16,7 @@ int main(int argc, char* argv[])
 	while (game.isRunning())
 	{
 		game.events();
-		SDL_Delay(game.CONTROL_DELAY);
+		game.delay();
 	}
 	game.close();
 	return 0;

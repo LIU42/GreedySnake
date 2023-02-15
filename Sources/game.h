@@ -11,72 +11,70 @@
 #include "snake.h"
 #include "resource.h"
 
-using namespace std;
-
 enum Status { START, PLAYING, PAUSE, OVER, EXIT };
 
-struct Image
+struct Images
 {
-	SDL_PixelFormat* format;
-	SDL_Surface* surface;
 	SDL_Surface* background;
 	SDL_Surface* snake;
 	SDL_Surface* food;
 };
 
-struct Font
+struct Fonts
 {
 	TTF_Font* info;
 };
 
-struct Timer
+struct Timers
 {
 	SDL_TimerID mainInterval;
 };
 
 class MainGame
 {
-	public:
+	private:
 		static constexpr auto TITLE = "Snake";
 
-	public:
+	private:
 		static const int SCREEN_WIDTH = 620;
 		static const int SCREEN_HEIGHT = 440;
 		static const int INTERVAL = 250;
 		static const int CONTROL_DELAY = 10;
 		static const int EAT_SCORE = 10;
 
-	public:
+	private:
 		static const int TABLE_ROWS = 30;
 		static const int TABLE_COLS = 20;
 		static const int BLOCK_SIZE = 20;
 		static const int BORDER = 10;
 
-	public:
+	private:
 		static const int FONT_SIZE = 14;
 		static const int TEXT_BORDER = 4;
 		static const int TEXT_LENGTH = 30;
 		static const int INFO_LENGTH_MARGIN = 230;
 		static const int INFO_SCORE_MARGIN = 110;
 
-	public:
+	private:
 		static constexpr SDL_Color BLACK = { 0, 0, 0 };
 
 	private:
 		SDL_Window* window;
+		SDL_Surface* surface;
+		SDL_PixelFormat* format;
 		SDL_SysWMinfo sysInfo;
-		SDL_Rect screen;
+		SDL_Rect screenRect;
 		SDL_Event event;
 		const Uint8* keyStatus;
 
 	private:
-		Image image;
-		Font font;
-		Timer timer;
+		Images images;
+		Fonts fonts;
+		Timers timers;
 
 	private:
 		Snake snake;
-		FoodList food;
+		FoodList foodList;
 		Status status;
 		int score;
 
@@ -85,12 +83,14 @@ class MainGame
 
 	private:
 		SDL_RWops* getResource(LPCWSTR, LPCWSTR);
-		SDL_Surface* loadSurface(int);
+		SDL_Surface* loadSurface(Uint32);
 
 	private:
 		void freeImage();
 		void freeFont();
 		void endMainInterval();
+		void closeWindow();
+		void closeEnvironment();
 
 	private:
 		void addFood();
@@ -105,6 +105,7 @@ class MainGame
 		void displaySnake();
 
 	public:
+		void initEnvironment();
 		void initWindow();
 		void initGame();
 		void loadImage();
@@ -117,5 +118,6 @@ class MainGame
 		void update();
 		void events();
 		void display();
+		void delay();
 };
 #endif
