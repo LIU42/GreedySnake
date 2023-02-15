@@ -2,7 +2,7 @@
 
 SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
-	HINSTANCE hInst = sysInfo.info.win.hinstance;
+	HINSTANCE hInst = windowInfo.info.win.hinstance;
 	HRSRC hRsrc = FindResource(hInst, name, type);
 	DWORD size = SizeofResource(hInst, hRsrc);
 	HGLOBAL hGlobal = LoadResource(hInst, hRsrc);
@@ -25,7 +25,7 @@ void MainGame::initEnvironment()
 	SDL_Init(SDL_INIT_EVERYTHING);
 	IMG_Init(IMG_INIT_PNG);
 	TTF_Init();
-	SDL_VERSION(&sysInfo.version);
+	SDL_VERSION(&windowInfo.version);
 }
 
 void MainGame::initWindow()
@@ -35,7 +35,7 @@ void MainGame::initWindow()
 	format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32);
 	keyStatus = SDL_GetKeyboardState(NULL);
 	screenRect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
-	SDL_GetWindowWMInfo(window, &sysInfo);
+	SDL_GetWindowWMInfo(window, &windowInfo);
 }
 
 void MainGame::loadImage()

@@ -62,7 +62,7 @@ class MainGame
 		SDL_Window* window;
 		SDL_Surface* surface;
 		SDL_PixelFormat* format;
-		SDL_SysWMinfo sysInfo;
+		SDL_SysWMinfo windowInfo;
 		SDL_Rect screenRect;
 		SDL_Event event;
 		const Uint8* keyStatus;
