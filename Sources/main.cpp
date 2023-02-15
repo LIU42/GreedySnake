@@ -19,5 +19,6 @@ int main(int argc, char* argv[])
 		game.delay();
 	}
 	game.close();
-	return 0;
+
+	return EXIT_SUCCESS;
 }
