@@ -15,14 +15,14 @@ enum Status { START, PLAYING, PAUSE, OVER, EXIT };
 
 struct Images
 {
-	SDL_Surface* background;
-	SDL_Surface* snake;
-	SDL_Surface* food;
+	SDL_Surface* pBackground;
+	SDL_Surface* pSnake;
+	SDL_Surface* pFood;
 };
 
 struct Fonts
 {
-	TTF_Font* info;
+	TTF_Font* pInfo;
 };
 
 struct Timers
@@ -59,13 +59,13 @@ class MainGame
 		static constexpr SDL_Color BLACK = { 0, 0, 0 };
 
 	private:
-		SDL_Window* window;
-		SDL_Surface* surface;
-		SDL_PixelFormat* format;
+		SDL_Window* pWindow;
+		SDL_Surface* pSurface;
+		SDL_PixelFormat* pFormat;
 		SDL_SysWMinfo windowInfo;
 		SDL_Rect screenRect;
 		SDL_Event event;
-		const Uint8* keyStatus;
+		const Uint8* pKeyStatus;
 
 	private:
 		Images images;
@@ -86,11 +86,20 @@ class MainGame
 		SDL_Surface* loadSurface(Uint32);
 
 	private:
+		void getVersion();
+		void initSystem();
+		void initWindow();
+		void initGame();
+		void loadImage();
+		void loadFont();
+		void startMainInterval();
+
+	private:
 		void freeImage();
 		void freeFont();
 		void endMainInterval();
 		void closeWindow();
-		void closeEnvironment();
+		void closeSystem();
 
 	private:
 		void addFood();
@@ -105,16 +114,11 @@ class MainGame
 		void displaySnake();
 
 	public:
-		void initEnvironment();
-		void initWindow();
-		void initGame();
-		void loadImage();
-		void loadFont();
-		void startMainInterval();
+		MainGame();
+		~MainGame();
 
 	public:
 		bool isRunning();
-		void close();
 		void update();
 		void events();
 		void display();
