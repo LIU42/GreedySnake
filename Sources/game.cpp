@@ -116,13 +116,14 @@ void MainGame::addFood()
 		foodTemp.x = rand() % TABLE_ROWS;
 		foodTemp.y = rand() % TABLE_COLS;
 
-		if (!count(snake.getBodyBegin(), snake.getBodyEnd(), foodTemp) && !count(foodList.begin(), foodList.end(), foodTemp))
+		if (count(snake.getBodyBegin(), snake.getBodyEnd(), foodTemp) || count(foodList.begin(), foodList.end(), foodTemp))
 		{
-			if (snake.getHeadX() != foodTemp.x && snake.getHeadY() != foodTemp.y)
-			{
-				foodList.push_back(foodTemp);
-				break;
-			}
+			continue;
+		}
+		if (snake.getHeadX() != foodTemp.x && snake.getHeadY() != foodTemp.y)
+		{
+			foodList.push_back(foodTemp);
+			break;
 		}
 	}
 }
@@ -137,12 +138,12 @@ void MainGame::snakeCrash()
 
 void MainGame::snakeEat()
 {
-	for (auto it = foodList.begin(); it != foodList.end(); ++it)
+	for (auto bodyIt = foodList.begin(); bodyIt != foodList.end(); ++bodyIt)
 	{
-		if (it->x == snake.getHeadX() && it->y == snake.getHeadY())
+		if (bodyIt->x == snake.getHeadX() && bodyIt->y == snake.getHeadY())
 		{
 			snake.eat();
-			foodList.erase(it);
+			foodList.erase(bodyIt);
 			addFood();
 			score += EAT_SCORE;
 			break;
@@ -152,12 +153,8 @@ void MainGame::snakeEat()
 
 void MainGame::displayText(const char* pText, int x, int y)
 {
-	static SDL_Surface* pTextSurface;
-	static SDL_Rect textRect;
-
-	pTextSurface = TTF_RenderText_Blended(fonts.pInfo, pText, BLACK);
-	textRect.x = x;
-	textRect.y = y;
+	SDL_Surface* pTextSurface = TTF_RenderText_Blended(fonts.pInfo, pText, BLACK);
+	SDL_Rect textRect = { x, y, 0, 0 };
 
 	SDL_BlitSurface(pTextSurface, NULL, pSurface, &textRect);
 	SDL_FreeSurface(pSurface);
@@ -165,7 +162,7 @@ void MainGame::displayText(const char* pText, int x, int y)
 
 void MainGame::displayBlock(SDL_Surface* pBlockSurface, int x, int y)
 {
-	static SDL_Rect blockRect;
+	SDL_Rect blockRect = { 0, 0, BLOCK_SIZE, BLOCK_SIZE };
 
 	blockRect.x = BORDER + BLOCK_SIZE * x;
 	blockRect.y = BORDER + BLOCK_SIZE * y;
@@ -196,17 +193,17 @@ void MainGame::displayInfo()
 
 void MainGame::displayFood()
 {
-	for (auto it = foodList.begin(); it != foodList.end(); ++it)
+	for (auto foodIt = foodList.begin(); foodIt != foodList.end(); ++foodIt)
 	{
-		displayBlock(images.pFood, it->x, it->y);
+		displayBlock(images.pFood, foodIt->x, foodIt->y);
 	}
 }
 
 void MainGame::displaySnake()
 {
-	for (auto it = snake.getBodyBegin(); it != snake.getBodyEnd(); ++it)
+	for (auto bodyIt = snake.getBodyBegin(); bodyIt != snake.getBodyEnd(); ++bodyIt)
 	{
-		displayBlock(images.pSnake, it->x, it->y);
+		displayBlock(images.pSnake, bodyIt->x, bodyIt->y);
 	}
 	displayBlock(images.pSnake, snake.getHeadX(), snake.getHeadY());
 }
