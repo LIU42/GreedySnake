@@ -18,7 +18,7 @@
     <ClCompile Include="Sources/main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Sources/game.cpp">
+    <ClCompile Include="Sources\greedysnake.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Sources/snake.cpp">
@@ -26,7 +26,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources/game.h">
+    <ClInclude Include="Sources\greedysnake.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Sources/resource.h">

@@ -10,7 +10,7 @@ enum Direct { UP, LEFT, RIGHT, DOWN };
 
 struct Block : SDL_Rect
 {
-	bool operator == (Block);
+	bool operator== (Block);
 };
 
 struct Head : Block
@@ -22,8 +22,8 @@ struct Head : Block
 typedef Block Body;
 typedef Block Food;
 
-typedef list <Body> BodyList;
-typedef list <Food> FoodList;
+typedef list<Body> BodyList;
+typedef list<Food> FoodList;
 
 class Snake
 {

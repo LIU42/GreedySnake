@@ -1,4 +1,4 @@
-#include "game.h"
+#include "greedysnake.h"
 
 SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 {
@@ -10,9 +10,9 @@ SDL_RWops* MainGame::getResource(LPCWSTR name, LPCWSTR type)
 	return SDL_RWFromConstMem(data, size);
 }
 
-SDL_Surface* MainGame::loadSurface(Uint32 id)
+SDL_Surface* MainGame::loadSurface(Uint32 resourceID)
 {
-	SDL_RWops* pResource = getResource(MAKEINTRESOURCE(id), TEXT("PNG"));
+	SDL_RWops* pResource = getResource(MAKEINTRESOURCE(resourceID), TEXT("PNG"));
 	SDL_Surface* pOriginalSurface = IMG_LoadPNG_RW(pResource);
 	SDL_Surface* pConvertedSurface = SDL_ConvertSurface(pOriginalSurface, pFormat, NULL);
 	SDL_FreeSurface(pOriginalSurface);
@@ -56,7 +56,7 @@ void MainGame::loadFont()
 	fonts.pInfo = TTF_OpenFontRW(getResource(MAKEINTRESOURCE(IDR_FONT1), RT_FONT), true, FONT_SIZE);
 }
 
-Uint32 MainGame::mainIntervalCallback(Uint32 interval, void* pParam)
+Uint32 mainIntervalCallback(Uint32 interval, void* pParam)
 {
 	MainGame* pGame = (MainGame*)pParam;
 	pGame->update();
@@ -138,12 +138,12 @@ void MainGame::snakeCrash()
 
 void MainGame::snakeEat()
 {
-	for (auto bodyIt = foodList.begin(); bodyIt != foodList.end(); ++bodyIt)
+	for (auto bodyIter = foodList.begin(); bodyIter != foodList.end(); ++bodyIter)
 	{
-		if (bodyIt->x == snake.getHeadX() && bodyIt->y == snake.getHeadY())
+		if (bodyIter->x == snake.getHeadX() && bodyIter->y == snake.getHeadY())
 		{
 			snake.eat();
-			foodList.erase(bodyIt);
+			foodList.erase(bodyIter);
 			addFood();
 			score += EAT_SCORE;
 			break;
@@ -193,17 +193,17 @@ void MainGame::displayInfo()
 
 void MainGame::displayFood()
 {
-	for (auto foodIt = foodList.begin(); foodIt != foodList.end(); ++foodIt)
+	for (auto foodIter = foodList.begin(); foodIter != foodList.end(); ++foodIter)
 	{
-		displayBlock(images.pFood, foodIt->x, foodIt->y);
+		displayBlock(images.pFood, foodIter->x, foodIter->y);
 	}
 }
 
 void MainGame::displaySnake()
 {
-	for (auto bodyIt = snake.getBodyBegin(); bodyIt != snake.getBodyEnd(); ++bodyIt)
+	for (auto bodyIter = snake.getBodyBegin(); bodyIter != snake.getBodyEnd(); ++bodyIter)
 	{
-		displayBlock(images.pSnake, bodyIt->x, bodyIt->y);
+		displayBlock(images.pSnake, bodyIter->x, bodyIter->y);
 	}
 	displayBlock(images.pSnake, snake.getHeadX(), snake.getHeadY());
 }

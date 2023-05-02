@@ -1,5 +1,5 @@
-#ifndef __GAME_H__
-#define __GAME_H__
+#ifndef __GREEDYSNAKE_H__
+#define __GREEDYSNAKE_H__
 
 #include <SDL.h>
 #include <SDL_syswm.h>
@@ -33,7 +33,7 @@ struct Timers
 class MainGame
 {
 	private:
-		static constexpr auto TITLE = "Snake";
+		static constexpr auto TITLE = "Greedy Snake";
 
 	private:
 		static const int SCREEN_WIDTH = 620;
@@ -77,9 +77,6 @@ class MainGame
 		FoodList foodList;
 		Status status;
 		int score;
-
-	private:
-		static Uint32 mainIntervalCallback(Uint32, void*);
 
 	private:
 		SDL_RWops* getResource(LPCWSTR, LPCWSTR);

@@ -22,8 +22,9 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{09a06ae2-9d8c-44db-a8ad-5889d104d4de}</ProjectGuid>
-    <RootNamespace>Snake</RootNamespace>
+    <RootNamespace>GreedySnake</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>GreedySnake</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -130,6 +131,8 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -150,6 +153,8 @@
       <AdditionalIncludeDirectories>D:\SDL2\include;E:\Kits\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <StringPooling>true</StringPooling>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,12 +170,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Sources/main.cpp" />
-    <ClCompile Include="Sources/game.cpp" />
+    <ClCompile Include="Sources\greedysnake.cpp" />
     <ClCompile Include="Sources/snake.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources/resource.h" />
-    <ClInclude Include="Sources/game.h" />
+    <ClInclude Include="Sources\greedysnake.h" />
     <ClInclude Include="Sources/snake.h" />
   </ItemGroup>
   <ItemGroup>

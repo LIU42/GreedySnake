@@ -1,4 +1,4 @@
-#include "game.h"
+#include "greedysnake.h"
 
 int main(int argc, char* argv[])
 {

@@ -90,9 +90,9 @@ bool Snake::getIsCrashed(int tableRows, int tableCols)
 		isAlive = false;
 		return true;
 	}
-	for (auto it = body.begin(); it != body.end(); ++it)
+	for (auto bodyIter = body.begin(); bodyIter != body.end(); ++bodyIter)
 	{
-		if (it->x == front.x && it->y == front.y)
+		if (bodyIter->x == front.x && bodyIter->y == front.y)
 		{
 			isAlive = false;
 			return true;
